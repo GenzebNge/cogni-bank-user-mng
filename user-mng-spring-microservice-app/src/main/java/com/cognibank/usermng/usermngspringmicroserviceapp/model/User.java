@@ -76,4 +76,9 @@ public class User {
         this.details = details;
         return this;
     }
+
+    public User withActive(Boolean active) {
+        this.active = active;
+        return this;
+    }
 }

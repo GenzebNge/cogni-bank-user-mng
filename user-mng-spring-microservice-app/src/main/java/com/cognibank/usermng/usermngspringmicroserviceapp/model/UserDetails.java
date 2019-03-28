@@ -5,6 +5,7 @@ import javax.persistence.*;
 @Entity
 public class UserDetails {
     @Id
+    @GeneratedValue
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
