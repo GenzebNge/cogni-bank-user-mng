@@ -6,17 +6,20 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserReposit
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 
+import javax.transaction.Transactional;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    private final String EMAIL = "Email";
+    public static final String EMAIL = "Email";
     //    private final String EMAIL_VALIDATED = "Email-isValidated";
-    private final String MOBILE_PHONE = "MobilePhone";
+    public static final String MOBILE_PHONE = "MobilePhone";
 //    private final String MOBILE_PHONE_VALIDATED = "MobilePhone-isValidated";
 
     @Autowired
@@ -33,10 +36,11 @@ public class UserService {
         }
     }
 
+    @Transactional
     public ValidatedUser validateUser(final String userName, final String password) {
         User user = userRepository.findByUserNameAndPassword(userName, hashPassword(userName, password));
 
-        return new ValidatedUser(user);
+        return new ValidatedUser(user, user.getDetails());
     }
 
     private String hashPassword(final String userName, final String clearPassword) {
@@ -74,14 +78,14 @@ public class UserService {
         }
     }
 
-    private class ValidatedUser {
+    public class ValidatedUser {
         private String userId;
         private boolean hasPhone;
         private boolean hasEmail;
 
-        private ValidatedUser(User user) {
+        private ValidatedUser(User user, List<UserDetails> details) {
             setUserId(user.getId());
-            user.getDetails().stream().
+            details.stream().
                     collect(Collectors.toMap(UserDetails::getFieldName, UserDetails::getFieldValue))
                     .entrySet().stream()
                     .filter(entry -> entry.getKey().equals(EMAIL) || entry.getKey().equals(MOBILE_PHONE))

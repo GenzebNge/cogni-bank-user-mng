@@ -4,11 +4,9 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
 import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -24,13 +22,13 @@ import static org.junit.Assert.*;
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class UserServiceTest {
+    String userId;
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private UserService userService;
 
-    @Test
+    @Before
     public void createNewUser() {
         User user = new User();
         List<UserDetails> detailsList = new ArrayList<>();
@@ -42,44 +40,44 @@ public class UserServiceTest {
                 .withUser(user)
                 .withFieldName("LastName")
                 .withFieldValue("Bar"));
+        detailsList.add(new UserDetails()
+                .withUser(user)
+                .withFieldName(UserService.EMAIL)
+                .withFieldValue("some@email.com"));
         user.withUserName("alok")
                 .withActive(true)
                 .withPassword("blahblah")
                 .withType(UserType.User)
                 .withUserDetails(detailsList);
-        String userId = userService.createNewUser(user);
+
+        userId = userService.createNewUser(user);
 
         assertNotNull("User must have an auto created id", userId);
     }
 
     @Test(expected = UserService.UserAlreadyExistsException.class)
     public void shouldNotCreateDuplicateUser() {
-        User user = new User();
-        user.withUserName("alok")
+        userService.createNewUser(new User()
+                .withUserName("alok")
                 .withActive(true)
                 .withPassword("blahblah")
-                .withType(UserType.User);
-        User user1 = new User();
-        user1.withUserName("alok")
-                .withActive(true)
-                .withPassword("blahblah")
-                .withType(UserType.User);
-        userService.createNewUser(user);
-        userService.createNewUser(user1);
+                .withType(UserType.User));
     }
 
     @Test
     public void shouldStoreHashedPassword() {
-        final String pass = "blahblah";
-        String userId =
-                userService.createNewUser(new User()
-                        .withUserName("alok")
-                        .withActive(true)
-                        .withPassword(pass)
-                        .withType(UserType.User));
-
+        final String expectedPass = "blahblah";
         Optional<User> user = userRepository.findById(userId);
         assertTrue("User should be created", user.isPresent());
-        assertNotEquals("User password must be different if it was hashed", pass, user.get().getPassword());
+        assertNotEquals("User password must be different if it was hashed", expectedPass, user.get().getPassword());
+    }
+
+    @Test
+    public void testToValidateUserNameAndPassword() {
+        UserService.ValidatedUser validatedUser = userService.validateUser("alok", "blahblah");
+
+        assertEquals("UserId is the same", userId, validatedUser.getUserId());
+        assertTrue("User has an email", validatedUser.getHasEmail());
+        assertFalse("User has no phone", validatedUser.getHasPhone());
     }
 }
