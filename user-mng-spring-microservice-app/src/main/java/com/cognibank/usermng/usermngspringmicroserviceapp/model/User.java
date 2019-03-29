@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Table(indexes = {@Index(columnList = "userName,password")})
 public class User {
     @Id
     @GeneratedValue(generator = "uuid2")
