@@ -12,7 +12,7 @@ public class User {
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", columnDefinition = "VARCHAR(255)")
     private String id;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private UserType type;
     @Column(nullable = false)
     private String userName;

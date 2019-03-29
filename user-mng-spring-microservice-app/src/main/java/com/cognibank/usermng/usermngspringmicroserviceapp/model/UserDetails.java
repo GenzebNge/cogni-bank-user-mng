@@ -3,6 +3,7 @@ package com.cognibank.usermng.usermngspringmicroserviceapp.model;
 import javax.persistence.*;
 
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames={"user_id", "fieldName"})})
 public class UserDetails {
     @Id
     @GeneratedValue
