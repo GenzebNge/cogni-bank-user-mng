@@ -5,6 +5,7 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
 import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserRepository;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.UserNameOrPasswordWrongException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,12 +75,8 @@ public class UserServiceTest {
         assertFalse("User has no phone", authenticatedUser.getHasPhone());
     }
 
-    @Test
+    @Test(expected = UserNameOrPasswordWrongException.class)
     public void validateNotExistingUserNameAndPassword() {
-        final AuthenticatedUser authenticatedUser = userService.authenticateUser("alok3", "blahblah");
-
-        assertNull("UserId should be null", authenticatedUser.getUserId());
-        assertFalse("User has an email", authenticatedUser.getHasEmail());
-        assertFalse("User has an phone", authenticatedUser.getHasPhone());
+        userService.authenticateUser("alok3", "blahblah");
     }
 }
