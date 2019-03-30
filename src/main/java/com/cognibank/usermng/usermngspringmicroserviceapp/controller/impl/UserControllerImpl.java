@@ -4,11 +4,10 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.controller.UserControl
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.NewUser;
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.UserCredentials;
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.validator.CreateUserValidator;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.ValidatedUser;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.WebDataBinder;
@@ -40,8 +39,8 @@ public class UserControllerImpl implements UserController {
     }
 
     @PostMapping("/checkUserNamePassword")
-    public ValidatedUser checkUserNamePassword(@Valid @RequestBody UserCredentials userCredentials) {
-        return userService.validateUser(userCredentials.getUserName(), userCredentials.getPassword());
+    public AuthenticatedUser checkUserNamePassword(@Valid @RequestBody UserCredentials userCredentials) {
+        return userService.authenticateUser(userCredentials.getUserName(), userCredentials.getPassword());
     }
 
     @PostMapping("/createUser")

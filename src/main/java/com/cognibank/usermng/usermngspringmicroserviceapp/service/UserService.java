@@ -1,7 +1,7 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.service;
 
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.ValidatedUser;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 
 public interface UserService {
     String FIRST_NAME = "FirstName";
@@ -11,5 +11,5 @@ public interface UserService {
 
     String createNewUser(final User user);
 
-    ValidatedUser validateUser(final String userName, final String password);
+    AuthenticatedUser authenticateUser(final String userName, final String password);
 }

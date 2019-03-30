@@ -4,7 +4,7 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
 import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserRepository;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.ValidatedUser;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,19 +67,19 @@ public class UserServiceTest {
 
     @Test
     public void validateUserNameAndPassword() {
-        final ValidatedUser validatedUser = userService.validateUser("alok2", "blahblah");
+        final AuthenticatedUser authenticatedUser = userService.authenticateUser("alok2", "blahblah");
 
-        assertEquals("UserId is the same", userId, validatedUser.getUserId());
-        assertTrue("User has an email", validatedUser.getHasEmail());
-        assertFalse("User has no phone", validatedUser.getHasPhone());
+        assertEquals("UserId is the same", userId, authenticatedUser.getUserId());
+        assertTrue("User has an email", authenticatedUser.getHasEmail());
+        assertFalse("User has no phone", authenticatedUser.getHasPhone());
     }
 
     @Test
     public void validateNotExistingUserNameAndPassword() {
-        final ValidatedUser validatedUser = userService.validateUser("alok3", "blahblah");
+        final AuthenticatedUser authenticatedUser = userService.authenticateUser("alok3", "blahblah");
 
-        assertNull("UserId should be null", validatedUser.getUserId());
-        assertFalse("User has an email", validatedUser.getHasEmail());
-        assertFalse("User has an phone", validatedUser.getHasPhone());
+        assertNull("UserId should be null", authenticatedUser.getUserId());
+        assertFalse("User has an email", authenticatedUser.getHasEmail());
+        assertFalse("User has an phone", authenticatedUser.getHasPhone());
     }
 }

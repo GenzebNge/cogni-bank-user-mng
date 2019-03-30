@@ -4,8 +4,9 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.controller.impl.UserCo
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.ValidatedUser;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.UserNameOrPasswordWrongException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,7 +65,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void checkUserCredentials() throws Exception {
+    public void checkSuccessfulUserCredentials() throws Exception {
         User user = new User();
         List<UserDetails> detailsList = new ArrayList<>();
         detailsList.add(new UserDetails()
@@ -86,8 +87,8 @@ public class UserControllerTest {
                 .withType(UserType.User)
                 .withUserDetails(detailsList);
 
-        Mockito.when(userService.validateUser(Mockito.eq("alok"), Mockito.anyString()))
-                .thenReturn(new ValidatedUser(user));
+        Mockito.when(userService.authenticateUser(Mockito.eq("alok"), Mockito.anyString()))
+                .thenReturn(new AuthenticatedUser(user));
 
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/checkUserNamePassword")
@@ -99,9 +100,12 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.userId").value(user.getId()))
                 .andExpect(jsonPath("$.hasPhone").value(false))
                 .andExpect(jsonPath("$.hasEmail").value(true));
+    }
 
-        Mockito.when(userService.validateUser(Mockito.eq("alok2"), Mockito.anyString()))
-                .thenReturn(new ValidatedUser(null));
+    @Test
+    public void checkWrongUserCredentials() throws Exception {
+        Mockito.when(userService.authenticateUser(Mockito.eq("alok2"), Mockito.anyString()))
+                .thenThrow(new UserNameOrPasswordWrongException());
 
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/checkUserNamePassword")
@@ -109,22 +113,22 @@ public class UserControllerTest {
                 .content("{\"userName\":\"alok2\", \"password\":\"blahblah\"}")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").isEmpty())
-                .andExpect(jsonPath("$.hasPhone").value(false))
-                .andExpect(jsonPath("$.hasEmail").value(false));
+                .andExpect(status().isForbidden());
+    }
 
+    @Test
+    public void checkBadUserCredentials() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/checkUserNamePassword")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"userName\":\"alok2\", \"password\":\"blahbla \"}") // min 8 char password (trimmed)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void createUser() throws Exception {
+    public void checkBadCreateUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/createUser")
                 .contentType(MediaType.APPLICATION_JSON)

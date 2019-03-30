@@ -6,17 +6,12 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
 
 import java.util.stream.Collectors;
 
-public class ValidatedUser {
+public class AuthenticatedUser {
     private String userId;
     private boolean hasPhone;
     private boolean hasEmail;
 
-    public ValidatedUser(User user) {
-        if (null == user) {
-            userId = null;
-            return;
-        }
-
+    public AuthenticatedUser(User user) {
         setUserId(user.getId());
         user.getDetails().stream().
                 collect(Collectors.toMap(UserDetails::getFieldName, UserDetails::getFieldValue))

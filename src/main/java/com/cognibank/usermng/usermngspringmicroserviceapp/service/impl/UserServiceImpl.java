@@ -34,10 +34,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public ValidatedUser validateUser(final String userName, final String password) {
-        User user = userRepository.findByUserNameAndPassword(userName, hashPassword(userName, password));
+    public AuthenticatedUser authenticateUser(final String userName, final String password) {
+        final User user = userRepository.findByUserNameAndPassword(userName, hashPassword(userName, password));
 
-        return new ValidatedUser(user);
+        if (null == user) {
+            throw new UserNameOrPasswordWrongException();
+        }
+
+        if (!user.getActive()) {
+            throw new UserLockedException();
+        }
+
+        return new AuthenticatedUser(user);
     }
 
     private String hashPassword(final String userName, final String clearPassword) {
