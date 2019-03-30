@@ -1,29 +1,22 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.controller;
 
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.Impl.ValidatedUser;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.NewUser;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.UserCredentials;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.validator.CreateUserValidator;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
-import formdata.UserCredentials;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.ValidatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-public class UserController {
-    static final String VERSION = "1.0.0";
+import javax.validation.Valid;
 
-    private UserService userService;
+public interface UserController {
+    String VERSION = "1.0.0";
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    String getVersion();
 
-    @GetMapping("/version")
-    public String getVersion() {
-        return VERSION;
-    }
+    ValidatedUser checkUserNamePassword(UserCredentials userCredentials);
 
-    @PostMapping("/checkUserNamePassword")
-    public ValidatedUser checkUserNamePassword(@RequestBody UserCredentials userCredentials) {
-        return userService.validateUser(userCredentials.userName, userCredentials.password);
-    }
+    void createUser(NewUser newUser);
 }

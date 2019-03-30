@@ -1,4 +1,4 @@
-package com.cognibank.usermng.usermngspringmicroserviceapp.service.Impl;
+package com.cognibank.usermng.usermngspringmicroserviceapp.service.impl;
 
 public class PasswordHashingNotPossibleException extends RuntimeException {
     PasswordHashingNotPossibleException(Throwable e) {

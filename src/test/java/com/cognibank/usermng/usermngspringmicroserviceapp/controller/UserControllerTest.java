@@ -1,10 +1,10 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.controller;
 
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.impl.UserControllerImpl;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.Impl.UserServiceImpl;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.Impl.ValidatedUser;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.ValidatedUser;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public class UserControllerTest {
     private UserService userService;
 
     @InjectMocks
-    private UserController userController;
+    private UserControllerImpl userController;
 
     @Before
     public void setup() {
@@ -113,6 +113,24 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.userId").isEmpty())
                 .andExpect(jsonPath("$.hasPhone").value(false))
                 .andExpect(jsonPath("$.hasEmail").value(false));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/checkUserNamePassword")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userName\":\"alok2\", \"password\":\"blahbla \"}") // min 8 char password (trimmed)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
     }
 
+    @Test
+    public void createUser() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/createUser")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userName\":\"45dgg\", \"password\":\"12345678\", \"email\":\"foo\", \"firstName\":\"Foo\", \"lastName\":\"B\"}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().is4xxClientError());
+    }
 }

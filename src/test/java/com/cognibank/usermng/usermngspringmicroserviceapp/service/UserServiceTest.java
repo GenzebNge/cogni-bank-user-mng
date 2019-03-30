@@ -4,7 +4,7 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
 import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserRepository;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.Impl.ValidatedUser;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.ValidatedUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

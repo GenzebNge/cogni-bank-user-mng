@@ -1,4 +1,4 @@
-package com.cognibank.usermng.usermngspringmicroserviceapp.service.Impl;
+package com.cognibank.usermng.usermngspringmicroserviceapp.service.impl;
 
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
