@@ -2,8 +2,8 @@ package com.cognibank.usermng.usermngspringmicroserviceapp.service.Impl;
 
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class ValidatedUser {
@@ -11,18 +11,23 @@ public class ValidatedUser {
     private boolean hasPhone;
     private boolean hasEmail;
 
-    public ValidatedUser(User user, List<UserDetails> details) {
+    public ValidatedUser(User user) {
+        if (null == user) {
+            userId = null;
+            return;
+        }
+
         setUserId(user.getId());
-        details.stream().
+        user.getDetails().stream().
                 collect(Collectors.toMap(UserDetails::getFieldName, UserDetails::getFieldValue))
                 .entrySet().stream()
-                .filter(entry -> entry.getKey().equals(UserServiceImpl.EMAIL) || entry.getKey().equals(UserServiceImpl.MOBILE_PHONE))
+                .filter(entry -> entry.getKey().equals(UserService.EMAIL) || entry.getKey().equals(UserService.MOBILE_PHONE))
                 .forEach(e -> {
                     switch (e.getKey()) {
-                        case UserServiceImpl.EMAIL:
+                        case UserService.EMAIL:
                             setHasEmail();
                             break;
-                        case UserServiceImpl.MOBILE_PHONE:
+                        case UserService.MOBILE_PHONE:
                             setHasPhone();
                             break;
                     }

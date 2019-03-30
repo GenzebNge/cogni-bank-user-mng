@@ -13,8 +13,6 @@ import java.util.StringJoiner;
 
 @Service
 public class UserServiceImpl implements UserService {
-    public static final String EMAIL = "Email";
-    public static final String MOBILE_PHONE = "MobilePhone";
     //private final String EMAIL_VALIDATED = "Email-isValidated";
     //private final String MOBILE_PHONE_VALIDATED = "MobilePhone-isValidated";
 
@@ -39,7 +37,7 @@ public class UserServiceImpl implements UserService {
     public ValidatedUser validateUser(final String userName, final String password) {
         User user = userRepository.findByUserNameAndPassword(userName, hashPassword(userName, password));
 
-        return new ValidatedUser(user, user.getDetails());
+        return new ValidatedUser(user);
     }
 
     private String hashPassword(final String userName, final String clearPassword) {

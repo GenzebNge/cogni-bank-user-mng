@@ -4,8 +4,6 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
 import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserRepository;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.Impl.UserAlreadyExistsException;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.Impl.UserServiceImpl;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.Impl.ValidatedUser;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,17 +21,24 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserServiceTest {
-    String userId;
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private UserService userService;
 
+    private String userId;
+
     @Before
     public void createNewUser() {
-        User user = new User();
-        List<UserDetails> detailsList = new ArrayList<>();
+        final List<UserDetails> detailsList = new ArrayList<>();
+        final User user = new User()
+                .withUserName("alok2")
+                .withActive(true)
+                .withPassword("blahblah")
+                .withType(UserType.User)
+                .withUserDetails(detailsList);
         detailsList.add(new UserDetails()
                 .withUser(user)
                 .withFieldName("FirstName")
@@ -44,26 +49,12 @@ public class UserServiceTest {
                 .withFieldValue("Bar"));
         detailsList.add(new UserDetails()
                 .withUser(user)
-                .withFieldName(UserServiceImpl.EMAIL)
+                .withFieldName(UserService.EMAIL)
                 .withFieldValue("some@email.com"));
-        user.withUserName("alok2")
-                .withActive(true)
-                .withPassword("blahblah")
-                .withType(UserType.User)
-                .withUserDetails(detailsList);
 
         userId = userService.createNewUser(user);
 
         assertNotNull("User must have an auto created id", userId);
-    }
-
-    @Test(expected = UserAlreadyExistsException.class)
-    public void shouldNotCreateDuplicateUser() {
-        userService.createNewUser(new User()
-                .withUserName("alok2")
-                .withActive(true)
-                .withPassword("blahblah")
-                .withType(UserType.User));
     }
 
     @Test
@@ -75,11 +66,20 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testToValidateUserNameAndPassword() {
-        ValidatedUser validatedUser = userService.validateUser("alok2", "blahblah");
+    public void validateUserNameAndPassword() {
+        final ValidatedUser validatedUser = userService.validateUser("alok2", "blahblah");
 
         assertEquals("UserId is the same", userId, validatedUser.getUserId());
         assertTrue("User has an email", validatedUser.getHasEmail());
         assertFalse("User has no phone", validatedUser.getHasPhone());
+    }
+
+    @Test
+    public void validateNotExistingUserNameAndPassword() {
+        final ValidatedUser validatedUser = userService.validateUser("alok3", "blahblah");
+
+        assertNull("UserId should be null", validatedUser.getUserId());
+        assertFalse("User has an email", validatedUser.getHasEmail());
+        assertFalse("User has an phone", validatedUser.getHasPhone());
     }
 }

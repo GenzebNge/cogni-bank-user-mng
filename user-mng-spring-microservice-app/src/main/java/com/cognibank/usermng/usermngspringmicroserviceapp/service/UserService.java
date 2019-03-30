@@ -16,7 +16,10 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public interface UserService {
-    public String createNewUser(final User user);
+    String EMAIL = "Email";
+    String MOBILE_PHONE = "MobilePhone";
 
-    public ValidatedUser validateUser(final String userName, final String password);
+    String createNewUser(final User user);
+
+    ValidatedUser validateUser(final String userName, final String password);
 }

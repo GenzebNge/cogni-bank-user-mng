@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(MockitoJUnitRunner.class)
 @WebMvcTest(UserController.class)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -75,7 +77,7 @@ public class UserControllerTest {
                 .withFieldValue("Bar"));
         detailsList.add(new UserDetails()
                 .withUser(user)
-                .withFieldName(UserServiceImpl.EMAIL)
+                .withFieldName(UserService.EMAIL)
                 .withFieldValue("some@email.com"));
         user.withUserName("alok")
                 .withId("000afd42-8cfe-44f5-bc58-b52b114c5b70")
@@ -84,8 +86,8 @@ public class UserControllerTest {
                 .withType(UserType.User)
                 .withUserDetails(detailsList);
 
-        Mockito.when(userService.validateUser(Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(new ValidatedUser(user, detailsList));
+        Mockito.when(userService.validateUser(Mockito.eq("alok"), Mockito.anyString()))
+                .thenReturn(new ValidatedUser(user));
 
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/checkUserNamePassword")
@@ -97,6 +99,20 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.userId").value(user.getId()))
                 .andExpect(jsonPath("$.hasPhone").value(false))
                 .andExpect(jsonPath("$.hasEmail").value(true));
+
+        Mockito.when(userService.validateUser(Mockito.eq("alok2"), Mockito.anyString()))
+                .thenReturn(new ValidatedUser(null));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/checkUserNamePassword")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userName\":\"alok2\", \"password\":\"blahblah\"}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").isEmpty())
+                .andExpect(jsonPath("$.hasPhone").value(false))
+                .andExpect(jsonPath("$.hasEmail").value(false));
     }
 
 }

@@ -3,24 +3,23 @@ package com.cognibank.usermng.usermngspringmicroserviceapp.repository;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
-import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 public class UserRepositoryTest {
-
-
     @Autowired
     private UserRepository userRepository;
 
@@ -57,7 +56,7 @@ public class UserRepositoryTest {
         detailsList.add(new UserDetails()
                 .withUser(newUser)
                 .withFieldName("FirstName")
-                .withFieldValue("Fooa"));
+                .withFieldValue("Foob"));
         newUser.withType(UserType.Manager)
                 .withUserName("foobar11")
                 .withPassword("test")
@@ -69,19 +68,18 @@ public class UserRepositoryTest {
     }
 
     @Test(expected = DataIntegrityViolationException.class)
-    public void userNameUniquenessTest(){
+    public void userNameUniquenessTest() {
         User user1 = new User()
                 .withUserName("alok")
                 .withActive(true)
                 .withType(UserType.User)
-                .withPassword("asjdhfksj");
+                .withPassword("1234qwer");
         User user2 = new User()
                 .withUserName("alok")
                 .withActive(true)
                 .withType(UserType.Manager)
-                .withPassword("asdfas");
-        user1 = userRepository.save(user1);
-        user2 = userRepository.save(user2);
-
+                .withPassword("1234qwer");
+        userRepository.save(user1);
+        userRepository.save(user2);
     }
 }
