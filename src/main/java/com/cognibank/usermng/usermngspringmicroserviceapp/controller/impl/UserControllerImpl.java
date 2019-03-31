@@ -1,9 +1,13 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.controller.impl;
 
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.UserController;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.NewUser;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserRequest;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.GetVersionResponse;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserResponse;
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.UserCredentials;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.validator.CreateUserValidator;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.util.UserTranslator;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.validator.CreateUserRequestValidator;
+import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,22 +24,22 @@ import java.util.stream.Collectors;
 @RestController
 public class UserControllerImpl implements UserController {
     private UserService userService;
-    private CreateUserValidator createUserValidator;
+    private CreateUserRequestValidator createUserRequestValidator;
 
     @Autowired
-    public UserControllerImpl(UserService userService, CreateUserValidator createUserValidator) {
+    public UserControllerImpl(UserService userService, CreateUserRequestValidator createUserRequestValidator) {
         this.userService = userService;
-        this.createUserValidator = createUserValidator;
+        this.createUserRequestValidator = createUserRequestValidator;
     }
 
     @InitBinder("newUser")
     public void initMerchantOnlyBinder(WebDataBinder binder) {
-        binder.addValidators(createUserValidator);
+        binder.addValidators(createUserRequestValidator);
     }
 
     @GetMapping("/version")
-    public String getVersion() {
-        return VERSION;
+    public GetVersionResponse getVersion() {
+        return new GetVersionResponse().withVersion(VERSION);
     }
 
     @PostMapping("/checkUserNamePassword")
@@ -44,11 +48,15 @@ public class UserControllerImpl implements UserController {
     }
 
     @PostMapping("/createUser")
-    public void createUser(@Valid @RequestBody NewUser newUser) {
-        System.out.println(newUser);
-        String userId = userService.createNewUser(null);
+    public CreateUserResponse createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
+        System.out.println(createUserRequest);
 
-        throw new RuntimeException("Not Implemented");
+        User newUser = UserTranslator.translate(createUserRequest);
+
+        String userId = userService.createNewUser(newUser);
+
+        return new CreateUserResponse()
+                .withUserId(userId);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

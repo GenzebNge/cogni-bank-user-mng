@@ -1,16 +1,13 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.controller.model;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.Map;
 
-public class NewUser {
+public class CreateUserRequest {
     @NotBlank(message = "{CreateUser.UserName.Blank}")
     @Size(min = 3, max = 32, message = "{CreateUser.UserName.Size}")
     @Pattern.List({
-            @Pattern(regexp = "^[a-zA-Z]", message = "{CreateUser.UserName.PatternStartWithLetters}"),
+            @Pattern(regexp = "^[a-zA-Z].*$", message = "{CreateUser.UserName.PatternStartWithLetters}"),
             @Pattern(regexp = "^[a-zA-Z0-9_/.]+$", message = "{CreateUser.UserName.PatternValidCharacters}")
     })
     private String userName;
@@ -25,6 +22,7 @@ public class NewUser {
     @NotBlank(message = "{CreateUser.LastName.Blank}")
     @Size(min = 2, max = 255, message = "{CreateUser.LastName.Size}")
     private String lastName;
+
     private Map<String, String> details;
 
     public String getUserName() {
@@ -77,7 +75,7 @@ public class NewUser {
 
     @Override
     public String toString() {
-        return "NewUser{" +
+        return "CreateUserRequest{" +
                 "userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +

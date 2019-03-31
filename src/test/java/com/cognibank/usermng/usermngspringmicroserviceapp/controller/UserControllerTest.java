@@ -55,17 +55,17 @@ public class UserControllerTest {
     }
 
     @Test
-    public void getVersion() throws Exception {
+    public void shouldReturnVersion() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/version")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(UserController.VERSION));
+                .andExpect(jsonPath("$.version").value(UserController.VERSION));
     }
 
     @Test
-    public void checkSuccessfulUserCredentials() throws Exception {
+    public void shouldReceiveOkStatusWithUserIdAndCorrectFlagsForEmailAndPhoneWhenCorrectLoginRequestComes() throws Exception {
         User user = new User();
         List<UserDetails> detailsList = new ArrayList<>();
         detailsList.add(new UserDetails()
@@ -103,7 +103,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void checkWrongUserCredentials() throws Exception {
+    public void shouldReceiveForbiddenStatusWhenWrongLoginRequestComes() throws Exception {
         Mockito.when(userService.authenticateUser(Mockito.eq("alok2"), Mockito.anyString()))
                 .thenThrow(new UserNameOrPasswordWrongException());
 
@@ -117,7 +117,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void checkBadUserCredentials() throws Exception {
+    public void shouldReceiveBadRequestWhenInvalidLoginRequestComes() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/checkUserNamePassword")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -128,13 +128,28 @@ public class UserControllerTest {
     }
 
     @Test
-    public void checkBadCreateUser() throws Exception {
+    public void shouldReceiveBadRequestWhenInvalidCreateUserRequestComes() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/createUser")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"userName\":\"45dgg\", \"password\":\"12345678\", \"email\":\"foo\", \"firstName\":\"Foo\", \"lastName\":\"B\"}")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReceiveOkStatusWithUserIdCreateUser() throws Exception {
+        Mockito.when(userService.createNewUser(Mockito.any(User.class)))
+                .thenReturn("000afd42-8cfe-44f5-bc58-b52b114c5b70");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/createUser")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"userName\":\"some.new_user123\", \"password\":\"12QWas*-_+\", \"email\":\"foo@bar.com\", \"firstName\":\"Foo\", \"lastName\":\"Bar\"}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").isNotEmpty());
     }
 }

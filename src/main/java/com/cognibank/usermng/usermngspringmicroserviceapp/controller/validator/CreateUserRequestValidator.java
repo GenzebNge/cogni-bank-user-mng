@@ -1,33 +1,41 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.controller.validator;
 
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.NewUser;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserRequest;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import java.util.regex.Pattern;
-
 @Component
-public class CreateUserValidator implements Validator {
+public class CreateUserRequestValidator implements Validator {
 
     private final UserService userService;
 
     @Autowired
-    public CreateUserValidator(UserService userService) {
+    public CreateUserRequestValidator(UserService userService) {
         this.userService = userService;
     }
 
     @Override
     public boolean supports(Class<?> aClass) {
-        return NewUser.class.equals(aClass);
+        return CreateUserRequest.class.equals(aClass);
     }
 
     @Override
     public void validate(Object o, Errors errors) {
-        NewUser user = (NewUser) o;
+        CreateUserRequest newUser = (CreateUserRequest) o;
+
+        if (null == newUser.getDetails()) {
+            errors.rejectValue("details", "CreateUser.Details.Null");
+        }
+
+        if (!newUser.getDetails().containsKey("FirstName")) {
+            errors.rejectValue("details", "CreateUser.Details.FirstName");
+        }
+        if (!newUser.getDetails().containsKey("LastName")) {
+            errors.rejectValue("details", "CreateUser.Details.LastName");
+        }
 
 //        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "AppUserForm.NotEmpty.email");
 //        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "emailConfirm", "AppUserForm.NotEmpty.emailConfirm");
