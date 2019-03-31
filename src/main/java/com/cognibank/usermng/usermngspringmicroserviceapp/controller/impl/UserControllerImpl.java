@@ -6,7 +6,6 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.GetVe
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserResponse;
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.UserCredentials;
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.util.UserTranslator;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.validator.CreateUserRequestValidator;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,17 +22,10 @@ import java.util.stream.Collectors;
 @RestController
 public class UserControllerImpl implements UserController {
     private UserService userService;
-    private CreateUserRequestValidator createUserRequestValidator;
 
     @Autowired
-    public UserControllerImpl(UserService userService, CreateUserRequestValidator createUserRequestValidator) {
+    public UserControllerImpl(UserService userService) {
         this.userService = userService;
-        this.createUserRequestValidator = createUserRequestValidator;
-    }
-
-    @InitBinder("newUser")
-    public void initMerchantOnlyBinder(WebDataBinder binder) {
-        binder.addValidators(createUserRequestValidator);
     }
 
     @GetMapping("/version")
