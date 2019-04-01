@@ -13,9 +13,6 @@ import java.util.StringJoiner;
 
 @Service
 public class UserServiceImpl implements UserService {
-    //private final String EMAIL_VALIDATED = "Email-isValidated";
-    //private final String MOBILE_PHONE_VALIDATED = "MobilePhone-isValidated";
-
     private final UserRepository userRepository;
 
     public UserServiceImpl(UserRepository userRepository) {

@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@Api(value = "User Management System", tags = "Operations pertaining to User in User Management System")
 public class UserControllerImpl implements UserController {
     private UserService userService;
 
@@ -31,31 +30,18 @@ public class UserControllerImpl implements UserController {
         this.userService = userService;
     }
 
-    @ApiOperation(value = "Endpoint which can get you the Version",notes = "", response = GetVersionResponse.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved list"),
-            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
-            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
-            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
-    })
     @GetMapping("/version")
     public GetVersionResponse getVersion() {
         return new GetVersionResponse().withVersion(VERSION);
     }
-
-    @ApiOperation(value ="End Point to post a User to User Management", notes = "", response = AuthenticatedUser.class)
 
     @PostMapping("/checkUserNamePassword")
     public AuthenticatedUser checkUserNamePassword(@ApiParam(value = "User Object to store in the database", required = true) @Valid @RequestBody UserCredentials userCredentials) {
         return userService.authenticateUser(userCredentials.getUserName(), userCredentials.getPassword());
     }
 
-    @ApiOperation(value ="End Point to post a User to User Management", notes = "", response = CreateUserResponse.class)
-
     @PostMapping("/createUser")
     public CreateUserResponse createUser(@ApiParam(value = "User Credentials to Validate", required = true) @Valid @RequestBody CreateUserRequest createUserRequest) {
-        System.out.println(createUserRequest);
-
         User newUser = UserTranslator.translate(createUserRequest);
 
         String userId = userService.createNewUser(newUser);

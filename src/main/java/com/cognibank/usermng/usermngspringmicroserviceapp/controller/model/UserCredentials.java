@@ -9,11 +9,11 @@ import javax.validation.constraints.*;
 public class UserCredentials {
 
     @NotBlank
-    @ApiModelProperty(value = "UserName given by the User", required = true)
+    @ApiModelProperty(value = "UserName given by the User", required = true, position = 1)
     private String userName;
     @NotBlank
     @Size(min = 8, max = 32)
-    @ApiModelProperty(value = "Password given by the User with size between 8 & 32 Characters inclusives", required = true)
+    @ApiModelProperty(value = "Password given by the User with size between 8 & 32 Characters inclusives", required = true, position = 2)
     private String password;
 
     public String getUserName() {
