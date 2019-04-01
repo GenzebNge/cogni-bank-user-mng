@@ -132,7 +132,7 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/createUser")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"userName\":\"45dgg\", \"password\":\"12345678\", \"email\":\"foo\", \"firstName\":\"Foo\", \"lastName\":\"B\"}")
+                .content("{\"userName\":\"45dgg\", \"password\":\"12345678\", \"email\":\"foo@\", \"firstName\":\"Foo\", \"lastName\":\"B\"}")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest());

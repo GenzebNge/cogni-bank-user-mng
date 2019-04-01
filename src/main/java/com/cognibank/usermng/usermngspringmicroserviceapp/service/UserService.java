@@ -8,6 +8,8 @@ public interface UserService {
     String LAST_NAME = "LastName";
     String EMAIL = "Email";
     String MOBILE_PHONE = "MobilePhone";
+    //String EMAIL_VALIDATED = "Email-isValidated";
+    //String MOBILE_PHONE_VALIDATED = "MobilePhone-isValidated";
 
     String createNewUser(final User user);
 

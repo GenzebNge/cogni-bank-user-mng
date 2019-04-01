@@ -1,12 +1,19 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.controller.model;
 
-import javax.validation.constraints.*;
+import io.swagger.annotations.ApiModelProperty;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 public class UserCredentials {
-    @NotBlank
+    @ApiModelProperty(notes = "User name, length must be 3-32 chars.", position = 1)
+    @NotBlank(message = "{CreateUser.UserName.Blank}")
+    @Size(min = 3, max = 32, message = "{CreateUser.UserName.Size}")
     private String userName;
-    @NotBlank
-    @Size(min = 8, max = 32)
+
+    @ApiModelProperty(notes = "Password, length must be 8-32 chars.", position = 2)
+    @NotBlank(message = "{CreateUser.Password.Blank}")
+    @Size(min = 8, max = 32, message = "{CreateUser.Password.Size}")
     private String password;
 
     public String getUserName() {

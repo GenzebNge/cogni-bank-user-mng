@@ -2,13 +2,13 @@ package com.cognibank.usermng.usermngspringmicroserviceapp.controller.impl;
 
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.UserController;
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserRequest;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.GetVersionResponse;
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserResponse;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.GetVersionResponse;
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.UserCredentials;
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.util.UserTranslator;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
