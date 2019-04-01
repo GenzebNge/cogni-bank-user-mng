@@ -1,5 +1,7 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.model;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -7,19 +9,25 @@ import java.util.List;
 
 @Entity
 @Table(indexes = {@Index(columnList = "userName,password")})
+@ApiModel(value = "Entity to describe user details at the time of creation")
 public class User {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", columnDefinition = "VARCHAR(255)")
+    @ApiModelProperty(value = "Id of the User", required = true)
     private String id;
     @Column(nullable = false)
+    @ApiModelProperty(value = "Id of the User", required = true)
     private UserType type;
     @Column(nullable = false, unique = true)
+    @ApiModelProperty(value = "Id of the User", required = true)
     private String userName;
     @Column(nullable = false)
+    @ApiModelProperty(value = "Id of the User", required = true)
     private String password;
     @Column(columnDefinition = "boolean default false")
+    @ApiModelProperty(value = "Id of the User", required = true)
     private Boolean active;
     @OneToMany(
             mappedBy = "user",
