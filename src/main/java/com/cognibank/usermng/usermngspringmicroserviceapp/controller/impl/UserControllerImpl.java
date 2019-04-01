@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -33,7 +34,10 @@ public class UserControllerImpl implements UserController {
     }
 
     @PostMapping("/checkUserNamePassword")
-    public AuthenticatedUser checkUserNamePassword(@ApiParam(value = "User Object to store in the database", required = true) @Valid @RequestBody UserCredentials userCredentials) {
+    public AuthenticatedUser checkUserNamePassword(
+            @ApiParam(value = "User Object to store in the database", required = true)
+            @Valid @RequestBody
+                    UserCredentials userCredentials) {
         return userService.authenticateUser(userCredentials.getUserName(), userCredentials.getPassword());
     }
 
@@ -47,9 +51,10 @@ public class UserControllerImpl implements UserController {
                 .withUserId(userId);
     }
 
-    @PostMapping("/updateUser")
-    public UpdateUserResponse updateUser(UpdateUserRequest updateUserRequest) {
-        return null;
+    @PostMapping("/updateUser/{userId}")
+    public UpdateUserResponse updateUser(@PathVariable String userId, @RequestBody Map<String, String> details) {
+         boolean updatedStatus = userService.updateUser(userId, details);
+         return new UpdateUserResponse().withUpdated(updatedStatus);
     }
 
     @PutMapping("/unlockUser/{userId}")

@@ -1,14 +1,14 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.controller.model;
 
 public class UpdateUserResponse {
-    private String userId;
+    private boolean updated;
 
-    public String getUserId() {
-        return userId;
+    public boolean isUpdated() {
+        return updated;
     }
 
-    public UpdateUserResponse withUserId(String userId) {
-        this.userId = userId;
+    public UpdateUserResponse withUpdated(boolean updated) {
+        this.updated = updated;
         return this;
     }
 }

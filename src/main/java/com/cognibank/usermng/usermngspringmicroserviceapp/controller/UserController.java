@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import java.util.Map;
+
 @Api(value = "User Management System", tags = "Operations pertaining to User in User Management System")
 public interface UserController {
     String VERSION = "0.0.1";
@@ -29,7 +31,7 @@ public interface UserController {
     })
     CreateUserResponse createUser(CreateUserRequest createUserRequest);
 
-    UpdateUserResponse updateUser(UpdateUserRequest updateUserRequest);
+    UpdateUserResponse updateUser(String userId, Map<String, String> details);
 
     void unlockUser(String id);
 }

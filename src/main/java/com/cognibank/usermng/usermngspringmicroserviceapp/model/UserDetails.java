@@ -52,4 +52,14 @@ public class UserDetails {
         this.fieldValue = fieldValue;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "UserDetails{" +
+                "id=" + id +
+                ", userId=" + user.getId() +
+                ", fieldName='" + fieldName + '\'' +
+                ", fieldValue='" + fieldValue + '\'' +
+                '}';
+    }
 }

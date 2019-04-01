@@ -3,6 +3,8 @@ package com.cognibank.usermng.usermngspringmicroserviceapp.service;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 
+import java.util.Map;
+
 public interface UserService {
     String FIRST_NAME = "FirstName";
     String LAST_NAME = "LastName";
@@ -16,4 +18,6 @@ public interface UserService {
     AuthenticatedUser authenticateUser(final String userName, final String password);
 
     boolean unlockUser(String id);
+
+    boolean updateUser(String id, Map<String, String> details);
 }

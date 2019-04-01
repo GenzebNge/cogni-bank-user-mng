@@ -1,24 +1,30 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.service.impl;
 
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
+import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
+import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserDetailsRepository;
 import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserRepository;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Optional;
-import java.util.StringJoiner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserDetailsRepository userDetailsRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, UserDetailsRepository userDetailsRepository) {
         this.userRepository = userRepository;
+        this.userDetailsRepository = userDetailsRepository;
     }
 
     public String createNewUser(final User user) {
@@ -33,11 +39,8 @@ public class UserServiceImpl implements UserService {
     }
 
     public AuthenticatedUser authenticateUser(final String userName, final String password) {
-        final User user = userRepository.findByUserNameAndPassword(userName, hashPassword(userName, password));
-
-        if (null == user) {
-            throw new UserNameOrPasswordWrongException();
-        }
+        final User user = userRepository.findByUserNameAndPassword(userName, hashPassword(userName, password))
+                .orElseThrow(UserNameOrPasswordWrongException::new);
 
         if (!user.getActive()) {
             throw new UserLockedException();
@@ -56,6 +59,44 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(user.withActive(true));
+
+        return true;
+    }
+
+    @Override
+    public boolean updateUser(String id, Map<String, String> details) {
+        // TODO: throw an exception if details contains FirstName or LastName
+        if (details.keySet().stream()
+                .anyMatch(d -> d.equalsIgnoreCase(FIRST_NAME)
+                        || d.equalsIgnoreCase(LAST_NAME))) {
+            throw new UserDetailsUpdateException("First name and last name cannot be changed by the user themself.");
+        }
+
+        User user = userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
+
+        List<UserDetails> userDetails = user.getDetails();
+
+        // Extract a key set from UserDetails table.
+        Set<String> userDetailFieldsSet =
+                userDetails.stream()
+                        .map(UserDetails::getFieldName)
+                        .collect(Collectors.toSet());
+
+        // Update existing records
+        userDetails.stream()
+                .filter(d -> details.keySet().contains(d.getFieldName()))
+                .forEach(d -> d.withFieldValue(details.get(d.getFieldName())));
+
+        // Add new records
+        details.entrySet().stream()
+                .filter(d -> !userDetailFieldsSet.contains(d.getKey()))
+                .forEach(d -> userDetails.add(new UserDetails()
+                        .withUser(user)
+                        .withFieldName(d.getKey())
+                        .withFieldValue(d.getValue())));
+
+        userDetailsRepository.saveAll(userDetails);
 
         return true;
     }
