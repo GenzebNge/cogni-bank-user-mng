@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 import java.util.StringJoiner;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
@@ -30,7 +32,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Transactional
     public AuthenticatedUser authenticateUser(final String userName, final String password) {
         final User user = userRepository.findByUserNameAndPassword(userName, hashPassword(userName, password));
 
@@ -43,6 +44,20 @@ public class UserServiceImpl implements UserService {
         }
 
         return new AuthenticatedUser(user);
+    }
+
+    @Override
+    public boolean unlockUser(String id) throws UserNotFoundException {
+        User user = userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
+
+        if (user.getActive()) {
+            return true;
+        }
+
+        userRepository.save(user.withActive(true));
+
+        return true;
     }
 
     private String hashPassword(final String userName, final String clearPassword) {

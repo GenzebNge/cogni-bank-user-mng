@@ -1,10 +1,7 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.controller.impl;
 
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.UserController;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserRequest;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserResponse;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.GetVersionResponse;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.UserCredentials;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.*;
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.util.UserTranslator;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
@@ -48,6 +45,16 @@ public class UserControllerImpl implements UserController {
 
         return new CreateUserResponse()
                 .withUserId(userId);
+    }
+
+    @PostMapping("/updateUser")
+    public UpdateUserResponse updateUser(UpdateUserRequest updateUserRequest) {
+        return null;
+    }
+
+    @PutMapping("/unlockUser/{userId}")
+    public void unlockUser(@PathVariable String userId) {
+        userService.unlockUser(userId);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

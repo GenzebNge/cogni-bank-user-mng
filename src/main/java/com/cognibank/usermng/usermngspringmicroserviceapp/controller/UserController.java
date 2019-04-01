@@ -1,9 +1,6 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.controller;
 
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserRequest;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.GetVersionResponse;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserResponse;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.UserCredentials;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.*;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,4 +28,8 @@ public interface UserController {
             @ApiResponse(code = 406, message = "When username has already been registered.")
     })
     CreateUserResponse createUser(CreateUserRequest createUserRequest);
+
+    UpdateUserResponse updateUser(UpdateUserRequest updateUserRequest);
+
+    void unlockUser(String id);
 }

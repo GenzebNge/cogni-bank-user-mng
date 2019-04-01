@@ -6,6 +6,7 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
 import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserRepository;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.UserNameOrPasswordWrongException;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.UserNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,5 +79,20 @@ public class UserServiceTest {
     @Test(expected = UserNameOrPasswordWrongException.class)
     public void validateNotExistingUserNameAndPassword() {
         userService.authenticateUser("alok3", "blahblah");
+    }
+
+    @Test
+    public void shouldUnlockUserWithId() {
+        userService.unlockUser(userId);
+
+        Optional<User> user = userRepository.findById(userId);
+
+        assertTrue("User should be found", user.isPresent());
+        assertTrue("User active status should be changed", user.get().getActive());
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void shouldUnlockUserWithFalseId() {
+        userService.unlockUser("this-is-a-wrong-id-that-does-not-exists");
     }
 }

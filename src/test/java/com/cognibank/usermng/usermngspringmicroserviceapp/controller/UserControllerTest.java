@@ -7,6 +7,7 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.UserNameOrPasswordWrongException;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.UserNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -151,5 +152,28 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").isNotEmpty());
+    }
+
+    @Test
+    public void shouldUnlockUserWithUserId() throws Exception {
+        Mockito.when(userService.unlockUser(Mockito.anyString()))
+                .thenReturn(true);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put("/unlockUser/000afd42-8cfe-44f5-bc58-b52b114c5b70")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+    @Test
+    public void shouldReturnNotFoundStatusUserWithNotExistingUserId() throws Exception {
+        Mockito.when(userService.unlockUser(Mockito.anyString()))
+                .thenThrow(UserNotFoundException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put("/unlockUser/000afd42-8cfe-44f5-bc58-b52b114c5b70")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }

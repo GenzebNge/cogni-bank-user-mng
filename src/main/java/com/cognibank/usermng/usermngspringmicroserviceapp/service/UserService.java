@@ -14,4 +14,6 @@ public interface UserService {
     String createNewUser(final User user);
 
     AuthenticatedUser authenticateUser(final String userName, final String password);
+
+    boolean unlockUser(String id);
 }
