@@ -105,6 +105,22 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    @Override
+    public boolean changePassword(String id, String newPassword) {
+        User user = userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
+
+        if (!user.getActive()) {
+            throw new UserLockedException();
+        }
+
+        userRepository.save(user.withPassword(
+                hashPassword(user.getUserName(), newPassword)
+        ));
+
+        return true;
+    }
+
     private String hashPassword(final String userName, final String clearPassword) {
         final StringJoiner sj = new StringJoiner(" | ");
         final String salt = "COGN1-BANK-5ALT-F0R-HASH1NG-PASSWORD5";

@@ -20,4 +20,6 @@ public interface UserService {
     boolean unlockUser(String id);
 
     boolean updateUser(String id, Map<String, String> details);
+
+    boolean changePassword(String id, String newPassword);
 }

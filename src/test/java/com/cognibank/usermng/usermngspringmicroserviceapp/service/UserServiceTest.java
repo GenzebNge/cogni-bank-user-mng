@@ -4,10 +4,10 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
 import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserRepository;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.UserDetailsUpdateException;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.UserNameOrPasswordWrongException;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.UserNotFoundException;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -112,18 +112,20 @@ public class UserServiceTest {
 
         Optional<User> user = userRepository.findById(userId);
 
-        assertTrue("User not found",  user.isPresent());
+        assertTrue("User not found", user.isPresent());
 
         List<UserDetails> detailsList = user.get().getDetails();
         assertNotNull("UserDetails not found", detailsList);
 
-        assertEquals("Field did not updated", 1, detailsList.stream()
-                .filter(d -> d.getFieldName().equals("Email") && d.getFieldValue().equals(newEmail))
-                .count());
+        assertEquals("Field did not updated", 1,
+                detailsList.stream()
+                        .filter(d -> d.getFieldName().equals("Email") && d.getFieldValue().equals(newEmail))
+                        .count());
 
-        assertEquals("Field did not inserted", 1, detailsList.stream()
-                .filter(d -> d.getFieldName().equals("Phone") && d.getFieldValue().equals(newPhone))
-                .count());
+        assertEquals("Field did not inserted", 1,
+                detailsList.stream()
+                        .filter(d -> d.getFieldName().equals("Phone") && d.getFieldValue().equals(newPhone))
+                        .count());
 
         System.out.println(user.get());
     }
@@ -141,6 +143,7 @@ public class UserServiceTest {
 
         userService.updateUser(userId, details);
     }
+
     @Test(expected = UserDetailsUpdateException.class)
     @Transactional
     public void shouldNotUpdateLastName() {
@@ -154,4 +157,23 @@ public class UserServiceTest {
 
         userService.updateUser(userId, details);
     }
+
+    @Test
+    public void shouldChangePassword() {
+        Optional<User> user = userRepository.findById(userId);
+        assertTrue("User not found", user.isPresent());
+
+        String hashedOldPass = user.get().getPassword();
+
+        final String expectedPass = "foobar12";
+        boolean changed = userService.changePassword(userId, expectedPass);
+        assertTrue("Expected response true", changed);
+
+        user = userRepository.findById(userId);
+
+        assertTrue("User not found", user.isPresent());
+        assertNotEquals("User password must be different if it was hashed", expectedPass, user.get().getPassword());
+        assertNotEquals("Hashed password should be changed", hashedOldPass, user.get().getPassword());
+    }
+
 }

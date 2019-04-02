@@ -5,10 +5,10 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.UserDetailsUpdateException;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.UserNameOrPasswordWrongException;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.UserNotFoundException;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -167,6 +167,7 @@ public class UserControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
+
     @Test
     public void shouldReturnNotFoundStatusUserWithNotExistingUserId() throws Exception {
         Mockito.when(userService.unlockUser(Mockito.anyString()))
@@ -221,4 +222,20 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }
+
+    @Test
+    public void shouldChangePassword() throws Exception {
+        Mockito.when(userService.changePassword(Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(true);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put("/changePassword/000AFD42-8CFE-44F5-BC58-B52B114C5B70")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"newPassword\":\"1234rewq\"}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.changed").isBoolean());
+    }
+
 }

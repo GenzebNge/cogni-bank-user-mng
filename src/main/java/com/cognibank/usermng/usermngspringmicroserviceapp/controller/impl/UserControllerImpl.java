@@ -6,7 +6,6 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.controller.util.UserTr
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
-import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
@@ -34,13 +33,12 @@ public class UserControllerImpl implements UserController {
 
     @PostMapping("/checkUserNamePassword")
     public AuthenticatedUser checkUserNamePassword(
-            @ApiParam(value = "User Object to store in the database", required = true)
             @Valid @RequestBody UserCredentials userCredentials) {
         return userService.authenticateUser(userCredentials.getUserName(), userCredentials.getPassword());
     }
 
     @PostMapping("/createUser")
-    public CreateUserResponse createUser(@ApiParam(value = "User Credentials to Validate", required = true) @Valid @RequestBody CreateUserRequest createUserRequest) {
+    public CreateUserResponse createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
         User newUser = UserTranslator.translate(createUserRequest);
 
         String userId = userService.createNewUser(newUser);
@@ -51,8 +49,14 @@ public class UserControllerImpl implements UserController {
 
     @PutMapping("/updateUser/{userId}")
     public UpdateUserResponse updateUser(@PathVariable String userId, @RequestBody Map<String, String> details) {
-        boolean updatedStatus = userService.updateUser(userId, details);
-        return new UpdateUserResponse().withUpdated(updatedStatus);
+        boolean updateStatus = userService.updateUser(userId, details);
+        return new UpdateUserResponse().withUpdated(updateStatus);
+    }
+
+    @PutMapping("/changePassword/{userId}")
+    public ChangePasswordResponse changePassword(@PathVariable String userId, @Valid @RequestBody ChangePasswordRequest request) {
+        boolean changeStatus = userService.changePassword(userId, request.getNewPassword());
+        return new ChangePasswordResponse().withChanged(changeStatus);
     }
 
     @PutMapping("/unlockUser/{userId}")
