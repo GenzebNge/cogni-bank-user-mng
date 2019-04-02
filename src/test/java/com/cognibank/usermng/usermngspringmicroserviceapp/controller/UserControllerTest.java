@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -236,6 +237,29 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.changed").isBoolean());
+    }
+
+    @Test
+    public void shouldReturnUserDetails() throws Exception {
+        String email = "foo@bar.com";
+        String firstName = "Genzeb";
+        String lastName = "Nge";
+        Mockito.when(userService.getUserDetails(Mockito.anyString()))
+                .thenReturn(new HashMap<String, String>() {{
+                    put(UserService.EMAIL, email);
+                    put(UserService.FIRST_NAME, firstName);
+                    put(UserService.LAST_NAME, lastName);
+                }});
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/getUserDetails/000AFD42-8CFE-44F5-BC58-B52B114C5B70")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.Email").value(email))
+                .andExpect(jsonPath("$.FirstName").value(firstName))
+                .andExpect(jsonPath("$.LastName").value(lastName));
     }
 
 }

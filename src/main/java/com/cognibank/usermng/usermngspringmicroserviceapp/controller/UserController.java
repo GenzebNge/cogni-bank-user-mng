@@ -70,4 +70,12 @@ public interface UserController {
             @ApiResponse(code = 404, message = "When user not found.")
     })
     void lockUser(String id);
+
+    @ApiOperation(value = "Get user details with user ID.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful."),
+            @ApiResponse(code = 404, message = "When user not found."),
+            @ApiResponse(code = 403, message = "When the user is locked.")
+    })
+    Map<String, String> getUserDetails(String id);
 }

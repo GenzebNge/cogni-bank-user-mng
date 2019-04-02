@@ -69,6 +69,11 @@ public class UserControllerImpl implements UserController {
         userService.lockUser(userId);
     }
 
+    @GetMapping("/getUserDetails/{userId}")
+    public Map<String, String> getUserDetails(@PathVariable String userId) {
+        return userService.getUserDetails(userId);
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public List<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
