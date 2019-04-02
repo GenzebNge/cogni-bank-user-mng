@@ -63,4 +63,11 @@ public interface UserController {
             @ApiResponse(code = 404, message = "When user not found.")
     })
     void unlockUser(String id);
+
+    @ApiOperation(value = "Lock a user.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful."),
+            @ApiResponse(code = 404, message = "When user not found.")
+    })
+    void lockUser(String id);
 }

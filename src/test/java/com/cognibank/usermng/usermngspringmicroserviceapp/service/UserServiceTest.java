@@ -83,12 +83,21 @@ public class UserServiceTest {
 
     @Test
     public void shouldUnlockUserWithId() {
+        Optional<User> user = userRepository.findById(userId);
+        assertTrue("User should be found", user.isPresent());
+        assertTrue("User should be active", user.get().getActive());
+
+        userService.lockUser(userId);
+
+        user = userRepository.findById(userId);
+        assertTrue("User should be found", user.isPresent());
+        assertFalse("User should be passive", user.get().getActive());
+
         userService.unlockUser(userId);
 
-        Optional<User> user = userRepository.findById(userId);
-
+        user = userRepository.findById(userId);
         assertTrue("User should be found", user.isPresent());
-        assertTrue("User active status should be changed", user.get().getActive());
+        assertTrue("User should be active", user.get().getActive());
     }
 
     @Test(expected = UserNotFoundException.class)

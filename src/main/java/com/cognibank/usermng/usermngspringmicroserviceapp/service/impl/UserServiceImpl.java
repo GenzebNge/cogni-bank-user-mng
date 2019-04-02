@@ -68,6 +68,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean lockUser(String id) throws UserNotFoundException {
+        User user = userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
+
+        if (!user.getActive()) {
+            return true;
+        }
+
+        userRepository.save(user.withActive(false));
+
+        // TODO: Push a notification when a user locked. So all sessions would be invalidated by the security.
+
+        return true;
+    }
+
+    @Override
     public boolean updateUser(String id, Map<String, String> details) {
         // throws an exception if details contains FirstName or LastName
         if (details.keySet().stream()
