@@ -19,18 +19,37 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+/**
+ * UserServiceImpl is a subclass of {@link UserService}
+ *  @see UserService
+ *  @see UserRepository
+ *  @see UserDetailsRepository
+ */
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserDetailsRepository userDetailsRepository;
 
+    /**
+     * Constructor to create beans which are dependent in this class
+     * @param userRepository {@link UserServiceImpl#userRepository}
+     * @param userDetailsRepository {@link UserServiceImpl#userDetailsRepository}
+     */
     @Autowired
     public UserServiceImpl(UserRepository userRepository, UserDetailsRepository userDetailsRepository) {
         this.userRepository = userRepository;
         this.userDetailsRepository = userDetailsRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws UserAlreadyExistsException {@link UserAlreadyExistsException}- if the User is already present in the database
+     * @see #hashPassword(String, String)
+     * @see UserService#createNewUser(User)
+     * @see UserRepository#save(Object)
+     * @see User
+     */
     public String createNewUser(final User user) {
         try {
             return userRepository.save(
@@ -42,6 +61,15 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws UserNameOrPasswordWrongException {@link UserNameOrPasswordWrongException} - if the given UserId or Password does not match
+     * @throws UserLockedException {@link UserLockedException}- if the given User is Locked and needs to be unlocked
+     * @see UserService#authenticateUser(String, String)
+     * @see AuthenticatedUser#AuthenticatedUser(User)
+     * @see UserRepository#findByUserNameAndPassword(String, String)
+     * @see User
+     */
     public AuthenticatedUser authenticateUser(final String userName, final String password) {
         final User user = userRepository.findByUserNameAndPassword(userName, hashPassword(userName, password))
                 .orElseThrow(UserNameOrPasswordWrongException::new);
@@ -53,6 +81,13 @@ public class UserServiceImpl implements UserService {
         return new AuthenticatedUser(user);
     }
 
+
+    /**
+     * {@inheritDoc}
+     * @throws UserNotFoundException {@link UserNotFoundException} - if the given User is not Found on the database
+     * @see User
+     * @see UserRepository#findById(Object)
+     */
     @Override
     public boolean unlockUser(String id) throws UserNotFoundException {
         User user = userRepository.findById(id)
@@ -83,6 +118,14 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws UserDetailsUpdateException {@link UserDetailsUpdateException} - if the details which need to be updated contain FirstName and lastName
+     * @throws UserNotFoundException {@link UserNotFoundException} - if the given User is not Found on the database
+     * @see User
+     * @see UserDetails
+     * @see UserRepository#saveAll(Iterable)
+     */
     @Override
     public boolean updateUser(String id, Map<String, String> details) {
         // throws an exception if details contains FirstName or LastName
@@ -137,6 +180,13 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     *  Hashes the password
+     * @param userName UserName of the User
+     * @param clearPassword Password of the User before Hashing
+     * @return <code> String </code> (Hashed Password)
+     * @throws PasswordHashingNotPossibleException {@link PasswordHashingNotPossibleException} - if password hashing is not possible
+     */
     private String hashPassword(final String userName, final String clearPassword) {
         final StringJoiner sj = new StringJoiner(" | ");
         final String salt = "COGN1-BANK-5ALT-F0R-HASH1NG-PASSWORD5";
