@@ -34,7 +34,7 @@ public interface UserController {
     })
     CreateUserResponse createUser(CreateUserRequest createUserRequest);
 
-    @ApiOperation(value = "Update a user's details.", response = CreateUserResponse.class)
+    @ApiOperation(value = "Update a user's details.", response = UpdateUserResponse.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful."),
             @ApiResponse(code = 400, message = "Badly formed request, or validations failed."),
@@ -43,7 +43,7 @@ public interface UserController {
     })
     UpdateUserResponse updateUser(String userId, Map<String, String> details);
 
-    @ApiOperation(value = "Unlock a user.", response = CreateUserResponse.class)
+    @ApiOperation(value = "Unlock a user.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful."),
             @ApiResponse(code = 404, message = "When user not found.")
