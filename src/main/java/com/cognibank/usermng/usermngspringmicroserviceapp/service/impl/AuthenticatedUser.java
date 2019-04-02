@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 
 public class AuthenticatedUser {
     private String userId;
+    private String phone;
     private boolean hasPhone;
+    private String email;
     private boolean hasEmail;
 
     public AuthenticatedUser(User user) {
@@ -20,9 +22,11 @@ public class AuthenticatedUser {
                 .forEach(e -> {
                     switch (e.getKey()) {
                         case UserService.EMAIL:
+                            setEmail(e.getValue());
                             setHasEmail();
                             break;
                         case UserService.MOBILE_PHONE:
+                            setPhone(e.getValue());
                             setHasPhone();
                             break;
                     }
@@ -51,5 +55,21 @@ public class AuthenticatedUser {
 
     private void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    private void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    private void setEmail(String email) {
+        this.email = email;
     }
 }

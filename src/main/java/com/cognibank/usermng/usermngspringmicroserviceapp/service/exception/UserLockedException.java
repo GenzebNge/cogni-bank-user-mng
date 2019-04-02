@@ -1,4 +1,4 @@
-package com.cognibank.usermng.usermngspringmicroserviceapp.service.impl;
+package com.cognibank.usermng.usermngspringmicroserviceapp.service.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

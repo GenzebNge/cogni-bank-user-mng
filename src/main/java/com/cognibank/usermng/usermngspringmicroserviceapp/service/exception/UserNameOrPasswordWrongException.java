@@ -1,8 +1,8 @@
-package com.cognibank.usermng.usermngspringmicroserviceapp.service.impl;
+package com.cognibank.usermng.usermngspringmicroserviceapp.service.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.FORBIDDEN, reason = "User name or password wrong.")
+@ResponseStatus(code = HttpStatus.UNAUTHORIZED, reason = "User name or password wrong.")
 public class UserNameOrPasswordWrongException extends RuntimeException {
 }

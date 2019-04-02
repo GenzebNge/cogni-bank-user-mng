@@ -1,14 +1,12 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.controller.impl;
 
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.UserController;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserRequest;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserResponse;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.GetVersionResponse;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.UserCredentials;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.*;
 import com.cognibank.usermng.usermngspringmicroserviceapp.controller.util.UserTranslator;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,20 +33,31 @@ public class UserControllerImpl implements UserController {
     }
 
     @PostMapping("/checkUserNamePassword")
-    public AuthenticatedUser checkUserNamePassword(@Valid @RequestBody UserCredentials userCredentials) {
+    public AuthenticatedUser checkUserNamePassword(
+            @ApiParam(value = "User Object to store in the database", required = true)
+            @Valid @RequestBody UserCredentials userCredentials) {
         return userService.authenticateUser(userCredentials.getUserName(), userCredentials.getPassword());
     }
 
     @PostMapping("/createUser")
-    public CreateUserResponse createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
-        System.out.println(createUserRequest);
-
+    public CreateUserResponse createUser(@ApiParam(value = "User Credentials to Validate", required = true) @Valid @RequestBody CreateUserRequest createUserRequest) {
         User newUser = UserTranslator.translate(createUserRequest);
 
         String userId = userService.createNewUser(newUser);
 
         return new CreateUserResponse()
                 .withUserId(userId);
+    }
+
+    @PutMapping("/updateUser/{userId}")
+    public UpdateUserResponse updateUser(@PathVariable String userId, @RequestBody Map<String, String> details) {
+        boolean updatedStatus = userService.updateUser(userId, details);
+        return new UpdateUserResponse().withUpdated(updatedStatus);
+    }
+
+    @PutMapping("/unlockUser/{userId}")
+    public void unlockUser(@PathVariable String userId) {
+        userService.unlockUser(userId);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

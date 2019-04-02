@@ -5,7 +5,9 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
 import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserRepository;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.UserNameOrPasswordWrongException;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.UserDetailsUpdateException;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.UserNameOrPasswordWrongException;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.UserNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,9 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.transaction.Transactional;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -78,5 +79,79 @@ public class UserServiceTest {
     @Test(expected = UserNameOrPasswordWrongException.class)
     public void validateNotExistingUserNameAndPassword() {
         userService.authenticateUser("alok3", "blahblah");
+    }
+
+    @Test
+    public void shouldUnlockUserWithId() {
+        userService.unlockUser(userId);
+
+        Optional<User> user = userRepository.findById(userId);
+
+        assertTrue("User should be found", user.isPresent());
+        assertTrue("User active status should be changed", user.get().getActive());
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void shouldUnlockUserWithFalseId() {
+        userService.unlockUser("this-is-a-wrong-id-that-does-not-exists");
+    }
+
+    @Test
+    @Transactional
+    public void shouldUpdateUserDetailsAndInsertNewDetails() {
+        final String newEmail = "new@email.com";
+        final String newPhone = "740-789-9876";
+
+
+        Map<String, String> details = new HashMap<String, String>() {{
+            put("Email", newEmail);
+            put("Phone", newPhone);
+        }};
+
+        assertTrue("Should return true", userService.updateUser(userId, details));
+
+        Optional<User> user = userRepository.findById(userId);
+
+        assertTrue("User not found",  user.isPresent());
+
+        List<UserDetails> detailsList = user.get().getDetails();
+        assertNotNull("UserDetails not found", detailsList);
+
+        assertEquals("Field did not updated", 1, detailsList.stream()
+                .filter(d -> d.getFieldName().equals("Email") && d.getFieldValue().equals(newEmail))
+                .count());
+
+        assertEquals("Field did not inserted", 1, detailsList.stream()
+                .filter(d -> d.getFieldName().equals("Phone") && d.getFieldValue().equals(newPhone))
+                .count());
+
+        System.out.println(user.get());
+    }
+
+    @Test(expected = UserDetailsUpdateException.class)
+    @Transactional
+    public void shouldNotUpdateFirstName() {
+        final String firstName = "FooBar";
+        final String newPhone = "740-789-9876";
+
+        Map<String, String> details = new HashMap<String, String>() {{
+            put(UserService.FIRST_NAME, firstName);
+            put("Phone", newPhone);
+        }};
+
+        userService.updateUser(userId, details);
+    }
+    @Test(expected = UserDetailsUpdateException.class)
+    @Transactional
+    public void shouldNotUpdateLastName() {
+        final String lastName = "FooBar";
+        final String newPhone = "740-789-9876";
+
+        Map<String, String> details = new HashMap<String, String>() {{
+            put(UserService.LAST_NAME, lastName);
+            put("Phone", newPhone);
+        }};
+
+        userService.updateUser(userId, details);
     }
 }

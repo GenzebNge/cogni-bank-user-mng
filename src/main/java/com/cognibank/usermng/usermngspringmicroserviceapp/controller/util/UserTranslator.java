@@ -39,6 +39,11 @@ public class UserTranslator {
                 .withFieldName(UserService.LAST_NAME)
                 .withFieldValue(createUserRequest.getLastName()));
 
+        details.add(new UserDetails()
+                .withUser(newUser)
+                .withFieldName(UserService.EMAIL)
+                .withFieldValue(createUserRequest.getEmail()));
+
         return newUser.withUserDetails(details);
     }
 }

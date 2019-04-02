@@ -1,11 +1,10 @@
 package com.cognibank.usermng.usermngspringmicroserviceapp.controller;
 
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserRequest;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.CreateUserResponse;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.GetVersionResponse;
-import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.UserCredentials;
+import com.cognibank.usermng.usermngspringmicroserviceapp.controller.model.*;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import io.swagger.annotations.*;
+
+import java.util.Map;
 
 @Api(tags = {"User API"})
 @SwaggerDefinition(
@@ -23,14 +22,31 @@ public interface UserController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful. Returns user ID, has email and has phone flags as a result."),
             @ApiResponse(code = 400, message = "Badly formed request, or validations failed."),
-            @ApiResponse(code = 403, message = "Credentials are invalid.")
+            @ApiResponse(code = 403, message = "Invalid credentials.")
     })
     AuthenticatedUser checkUserNamePassword(UserCredentials userCredentials);
 
     @ApiOperation(value = "Creates a user.", response = CreateUserResponse.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Successful. Returns user ID."),
-            @ApiResponse(code = 400, message = "Badly formed request, or validations failed.")
+            @ApiResponse(code = 400, message = "Badly formed request, or validations failed."),
+            @ApiResponse(code = 406, message = "When username has already been registered.")
     })
     CreateUserResponse createUser(CreateUserRequest createUserRequest);
+
+    @ApiOperation(value = "Update a user's details.", response = CreateUserResponse.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful."),
+            @ApiResponse(code = 400, message = "Badly formed request, or validations failed."),
+            @ApiResponse(code = 403, message = "First name and last name cannot be updated."),
+            @ApiResponse(code = 404, message = "When user not found.")
+    })
+    UpdateUserResponse updateUser(String userId, Map<String, String> details);
+
+    @ApiOperation(value = "Unlock a user.", response = CreateUserResponse.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful."),
+            @ApiResponse(code = 404, message = "When user not found.")
+    })
+    void unlockUser(String id);
 }

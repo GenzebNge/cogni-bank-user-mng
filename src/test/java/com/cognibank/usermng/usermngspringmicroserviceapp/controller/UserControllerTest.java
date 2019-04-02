@@ -4,9 +4,11 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.controller.impl.UserCo
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
-import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.UserNameOrPasswordWrongException;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.AuthenticatedUser;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.UserDetailsUpdateException;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.UserNameOrPasswordWrongException;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.UserNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(MockitoJUnitRunner.class)
 @WebMvcTest(UserController.class)
@@ -103,7 +106,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldReceiveForbiddenStatusWhenWrongLoginRequestComes() throws Exception {
+    public void shouldReceiveUnauthorizedStatusWhenWrongLoginRequestComes() throws Exception {
         Mockito.when(userService.authenticateUser(Mockito.eq("alok2"), Mockito.anyString()))
                 .thenThrow(new UserNameOrPasswordWrongException());
 
@@ -113,7 +116,7 @@ public class UserControllerTest {
                 .content("{\"userName\":\"alok2\", \"password\":\"blahblah\"}")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -151,5 +154,71 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").isNotEmpty());
+    }
+
+    @Test
+    public void shouldUnlockUserWithUserId() throws Exception {
+        Mockito.when(userService.unlockUser(Mockito.anyString()))
+                .thenReturn(true);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put("/unlockUser/000afd42-8cfe-44f5-bc58-b52b114c5b70")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+    @Test
+    public void shouldReturnNotFoundStatusUserWithNotExistingUserId() throws Exception {
+        Mockito.when(userService.unlockUser(Mockito.anyString()))
+                .thenThrow(UserNotFoundException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put("/unlockUser/000afd42-8cfe-44f5-bc58-b52b114c5b70")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void shouldReturnNotFoundStatusWhenUpdatingNotExistingUser() throws Exception {
+        Mockito.when(userService.updateUser(Mockito.anyString(), Mockito.anyMap()))
+                .thenThrow(UserNotFoundException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put("/updateUser/000AFD42-8CFE-44F5-BC58-B52B114C5B70")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"Email\":\"foo@bar.com\"}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void shouldUpdateUserDetails() throws Exception {
+        Mockito.when(userService.updateUser(Mockito.anyString(), Mockito.anyMap()))
+                .thenReturn(true);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put("/updateUser/000AFD42-8CFE-44F5-BC58-B52B114C5B70")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"Email\":\"foo@bar.com\"}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.updated").isBoolean());
+    }
+
+    @Test
+    public void shouldNotUpdateFirstNameOrLastName() throws Exception {
+        Mockito.when(userService.updateUser(Mockito.anyString(), Mockito.anyMap()))
+                .thenThrow(UserDetailsUpdateException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .put("/updateUser/000AFD42-8CFE-44F5-BC58-B52B114C5B70")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"FirstName\":\"NewFirstName\"}")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
     }
 }
