@@ -41,6 +41,11 @@ public interface UserService {
      */
     boolean unlockUser(String id);
 
+    /**
+     * Locks the User
+     * @param id Id of the User
+     * @return <code> boolean </code> stating that the User is locked
+     */
     boolean lockUser(String id);
 
     /**
@@ -51,5 +56,10 @@ public interface UserService {
      * */
     boolean updateUser(String id, Map<String, String> details);
 
+    /**
+     * Locks the User
+     * @param id Id of the User
+     * @return <code> boolean </code> stating that the User is locked
+     */
     boolean changePassword(String id, String newPassword);
 }

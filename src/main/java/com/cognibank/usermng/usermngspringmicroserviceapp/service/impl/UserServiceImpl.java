@@ -81,7 +81,6 @@ public class UserServiceImpl implements UserService {
         return new AuthenticatedUser(user);
     }
 
-
     /**
      * {@inheritDoc}
      * @throws UserNotFoundException {@link UserNotFoundException} - if the given User is not Found on the database
@@ -102,6 +101,12 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws UserNotFoundException {@link UserNotFoundException} - if the given User is not Found on the database
+     * @see User
+     * @see UserRepository#findById(Object)
+     */
     @Override
     public boolean lockUser(String id) throws UserNotFoundException {
         User user = userRepository.findById(id)
@@ -164,6 +169,13 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     * @throws UserNotFoundException {@link UserNotFoundException} - if the given User is not Found on the database
+     * @throws UserLockedException {@link UserLockedException} - if the given User is currently locked
+     * @see User
+     * @see UserRepository#findById(Object)
+     */
     @Override
     public boolean changePassword(String id, String newPassword) {
         User user = userRepository.findById(id)

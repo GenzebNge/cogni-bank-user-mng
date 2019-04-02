@@ -27,24 +27,11 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .apiInfo(metaData());
     }
 
-<<<<<<< Updated upstream
     private ApiInfo metaData() {
         return new ApiInfoBuilder()
                 .title("Cogni-Bank User REST API")
                 .description("User API for Cogni-Bank project.")
                 .version(UserController.VERSION)
-=======
-    public Docket api() {
-
-        return new Docket(DocumentationType.SWAGGER_2).select()
-
-                .apis(RequestHandlerSelectors
-
-                        .basePackage("com.cognibank.usermng.usermngspringmicroserviceapp.controller"))
-
-                .paths(PathSelectors.regex("/.*"))
-
->>>>>>> Stashed changes
                 .build();
     }
 
