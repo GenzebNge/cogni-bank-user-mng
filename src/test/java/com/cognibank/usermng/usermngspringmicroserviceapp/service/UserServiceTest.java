@@ -135,8 +135,6 @@ public class UserServiceTest {
                 detailsList.stream()
                         .filter(d -> d.getFieldName().equals("Phone") && d.getFieldValue().equals(newPhone))
                         .count());
-
-        System.out.println(user.get());
     }
 
     @Test(expected = UserDetailsUpdateException.class)
@@ -183,6 +181,23 @@ public class UserServiceTest {
         assertTrue("User not found", user.isPresent());
         assertNotEquals("User password must be different if it was hashed", expectedPass, user.get().getPassword());
         assertNotEquals("Hashed password should be changed", hashedOldPass, user.get().getPassword());
+    }
+
+    @Test
+    @Transactional
+    public void shouldReturnUserDetailsForAUserWithItsID() {
+        Map<String, String> userDetails = userService.getUserDetails(userId);
+
+        Optional<User> user = userRepository.findById(userId);
+
+        assertTrue("User not found", user.isPresent());
+
+        List<UserDetails> detailsList = user.get().getDetails();
+        assertNotNull("UserDetails not found", detailsList);
+
+        assertTrue("UserDetails must match with the database",
+                detailsList.stream()
+                        .allMatch(d -> userDetails.get(d.getFieldName()).equals(d.getFieldValue())));
     }
 
 }

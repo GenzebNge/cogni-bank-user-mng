@@ -62,4 +62,11 @@ public interface UserService {
      * @return <code> boolean </code> stating that the User is locked
      */
     boolean changePassword(String id, String newPassword);
+
+    /**
+     * Returns user details from the database
+     * @param id Id of the User
+     * @return <code> Map<String, String> </code> user details
+     */
+    Map<String, String> getUserDetails(String id);
 }

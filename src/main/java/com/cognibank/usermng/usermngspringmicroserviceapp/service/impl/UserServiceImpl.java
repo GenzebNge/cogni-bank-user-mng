@@ -21,9 +21,10 @@ import java.util.stream.Collectors;
 
 /**
  * UserServiceImpl is a subclass of {@link UserService}
- *  @see UserService
- *  @see UserRepository
- *  @see UserDetailsRepository
+ *
+ * @see UserService
+ * @see UserRepository
+ * @see UserDetailsRepository
  */
 @Service
 @Transactional
@@ -33,7 +34,8 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Constructor to create beans which are dependent in this class
-     * @param userRepository {@link UserServiceImpl#userRepository}
+     *
+     * @param userRepository        {@link UserServiceImpl#userRepository}
      * @param userDetailsRepository {@link UserServiceImpl#userDetailsRepository}
      */
     @Autowired
@@ -44,6 +46,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
+     *
      * @throws UserAlreadyExistsException {@link UserAlreadyExistsException}- if the User is already present in the database
      * @see #hashPassword(String, String)
      * @see UserService#createNewUser(User)
@@ -63,8 +66,9 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
+     *
      * @throws UserNameOrPasswordWrongException {@link UserNameOrPasswordWrongException} - if the given UserId or Password does not match
-     * @throws UserLockedException {@link UserLockedException}- if the given User is Locked and needs to be unlocked
+     * @throws UserLockedException              {@link UserLockedException}- if the given User is Locked and needs to be unlocked
      * @see UserService#authenticateUser(String, String)
      * @see AuthenticatedUser#AuthenticatedUser(User)
      * @see UserRepository#findByUserNameAndPassword(String, String)
@@ -74,15 +78,14 @@ public class UserServiceImpl implements UserService {
         final User user = userRepository.findByUserNameAndPassword(userName, hashPassword(userName, password))
                 .orElseThrow(UserNameOrPasswordWrongException::new);
 
-        if (!user.getActive()) {
-            throw new UserLockedException();
-        }
+        checkIfUserIsLocked(user);
 
         return new AuthenticatedUser(user);
     }
 
     /**
      * {@inheritDoc}
+     *
      * @throws UserNotFoundException {@link UserNotFoundException} - if the given User is not Found on the database
      * @see User
      * @see UserRepository#findById(Object)
@@ -103,6 +106,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
+     *
      * @throws UserNotFoundException {@link UserNotFoundException} - if the given User is not Found on the database
      * @see User
      * @see UserRepository#findById(Object)
@@ -125,8 +129,9 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
+     *
      * @throws UserDetailsUpdateException {@link UserDetailsUpdateException} - if the details which need to be updated contain FirstName and lastName
-     * @throws UserNotFoundException {@link UserNotFoundException} - if the given User is not Found on the database
+     * @throws UserNotFoundException      {@link UserNotFoundException} - if the given User is not Found on the database
      * @see User
      * @see UserDetails
      * @see UserRepository#saveAll(Iterable)
@@ -171,8 +176,9 @@ public class UserServiceImpl implements UserService {
 
     /**
      * {@inheritDoc}
+     *
      * @throws UserNotFoundException {@link UserNotFoundException} - if the given User is not Found on the database
-     * @throws UserLockedException {@link UserLockedException} - if the given User is currently locked
+     * @throws UserLockedException   {@link UserLockedException} - if the given User is currently locked
      * @see User
      * @see UserRepository#findById(Object)
      */
@@ -181,9 +187,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(UserNotFoundException::new);
 
-        if (!user.getActive()) {
-            throw new UserLockedException();
-        }
+        checkIfUserIsLocked(user);
 
         userRepository.save(user.withPassword(
                 hashPassword(user.getUserName(), newPassword)
@@ -192,9 +196,36 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    private void checkIfUserIsLocked(User user) {
+        if (!user.getActive()) {
+            throw new UserLockedException();
+        }
+    }
+
     /**
-     *  Hashes the password
-     * @param userName UserName of the User
+     * {@inheritDoc}
+     *
+     * @throws UserNotFoundException {@link UserNotFoundException} - if the given User is not Found on the database
+     * @throws UserLockedException   {@link UserLockedException} - if the given User is currently locked
+     * @see User
+     * @see UserRepository#findById(Object)
+     */
+    @Override
+    public Map<String, String> getUserDetails(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
+
+        checkIfUserIsLocked(user);
+
+        return user.getDetails().stream()
+                .collect(Collectors.toMap(
+                        UserDetails::getFieldName, UserDetails::getFieldValue));
+    }
+
+    /**
+     * Hashes the password
+     *
+     * @param userName      UserName of the User
      * @param clearPassword Password of the User before Hashing
      * @return <code> String </code> (Hashed Password)
      * @throws PasswordHashingNotPossibleException {@link PasswordHashingNotPossibleException} - if password hashing is not possible
