@@ -69,4 +69,11 @@ public interface UserService {
      * @return <code> Map<String, String> </code> user details
      */
     Map<String, String> getUserDetails(String id);
+
+    /**
+     * Returns user id from the database
+     * @param userName User Name of the User
+     * @return <code> String </code> user Id
+     */
+    String getUserId(String userName);
 }

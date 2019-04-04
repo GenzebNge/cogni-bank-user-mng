@@ -32,13 +32,16 @@ public class UserServiceTest {
 
     private String userId;
 
+    public static final String USER_NAME = "alok2";
+    public static final String PASSWORD = "blahblah";
+
     @Before
     public void createNewUser() {
         final List<UserDetails> detailsList = new ArrayList<>();
         final User user = new User()
-                .withUserName("alok2")
+                .withUserName(USER_NAME)
                 .withActive(true)
-                .withPassword("blahblah")
+                .withPassword(PASSWORD)
                 .withType(UserType.User)
                 .withUserDetails(detailsList);
         detailsList.add(new UserDetails()
@@ -61,7 +64,7 @@ public class UserServiceTest {
 
     @Test
     public void shouldStoreHashedPassword() {
-        final String expectedPass = "blahblah";
+        final String expectedPass = PASSWORD;
         Optional<User> user = userRepository.findById(userId);
         assertTrue("User should be created", user.isPresent());
         assertNotEquals("User password must be different if it was hashed", expectedPass, user.get().getPassword());
@@ -69,7 +72,7 @@ public class UserServiceTest {
 
     @Test
     public void validateUserNameAndPassword() {
-        final AuthenticatedUser authenticatedUser = userService.authenticateUser("alok2", "blahblah");
+        final AuthenticatedUser authenticatedUser = userService.authenticateUser(USER_NAME, PASSWORD);
 
         assertEquals("UserId is the same", userId, authenticatedUser.getUserId());
         assertTrue("User has an email", authenticatedUser.getHasEmail());
@@ -78,7 +81,7 @@ public class UserServiceTest {
 
     @Test(expected = UserNameOrPasswordWrongException.class)
     public void validateNotExistingUserNameAndPassword() {
-        userService.authenticateUser("alok3", "blahblah");
+        userService.authenticateUser("alok3", PASSWORD);
     }
 
     @Test
@@ -198,6 +201,20 @@ public class UserServiceTest {
         assertTrue("UserDetails must match with the database",
                 detailsList.stream()
                         .allMatch(d -> userDetails.get(d.getFieldName()).equals(d.getFieldValue())));
+    }
+
+    @Test
+    public void shouldReturnUserIdForAUserWithItsUserName() {
+        final String userIdFromService = userService.getUserId(USER_NAME);
+
+        final Optional<User> user = userRepository.findByUserName(USER_NAME);
+
+        assertTrue("User should be present in the database", user.isPresent());
+
+        assertTrue("Should give the same user id", userIdFromService.equalsIgnoreCase(user.get().getId()));
+
+        assertTrue("Should be equal to the user id created in the before each method.",
+                userId.equalsIgnoreCase(userIdFromService));
     }
 
 }

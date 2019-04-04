@@ -39,9 +39,9 @@ public class UserControllerImpl implements UserController {
 
     @PostMapping("/createUser")
     public CreateUserResponse createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
-        User newUser = UserTranslator.translate(createUserRequest);
+        final User newUser = UserTranslator.translate(createUserRequest);
 
-        String userId = userService.createNewUser(newUser);
+        final String userId = userService.createNewUser(newUser);
 
         return new CreateUserResponse()
                 .withUserId(userId);
@@ -49,13 +49,13 @@ public class UserControllerImpl implements UserController {
 
     @PutMapping("/updateUser/{userId}")
     public UpdateUserResponse updateUser(@PathVariable String userId, @RequestBody Map<String, String> details) {
-        boolean updateStatus = userService.updateUser(userId, details);
+        final boolean updateStatus = userService.updateUser(userId, details);
         return new UpdateUserResponse().withUpdated(updateStatus);
     }
 
     @PutMapping("/changePassword/{userId}")
     public ChangePasswordResponse changePassword(@PathVariable String userId, @Valid @RequestBody ChangePasswordRequest request) {
-        boolean changeStatus = userService.changePassword(userId, request.getNewPassword());
+        final boolean changeStatus = userService.changePassword(userId, request.getNewPassword());
         return new ChangePasswordResponse().withChanged(changeStatus);
     }
 
@@ -72,6 +72,12 @@ public class UserControllerImpl implements UserController {
     @GetMapping("/getUserDetails/{userId}")
     public Map<String, String> getUserDetails(@PathVariable String userId) {
         return userService.getUserDetails(userId);
+    }
+
+    @GetMapping("/retrieveUserId/{userName}")
+    public CreateUserResponse getUserIdFromUserName(@PathVariable String userName) {
+        final String userId = userService.getUserId(userName);
+        return new CreateUserResponse().withUserId(userId);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

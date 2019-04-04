@@ -78,4 +78,11 @@ public interface UserController {
             @ApiResponse(code = 403, message = "When the user is locked.")
     })
     Map<String, String> getUserDetails(String id);
+
+    @ApiOperation(value = "Get user id from the user name.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful."),
+            @ApiResponse(code = 404, message = "When the user is not found.")
+    })
+    CreateUserResponse getUserIdFromUserName(String userName);
 }

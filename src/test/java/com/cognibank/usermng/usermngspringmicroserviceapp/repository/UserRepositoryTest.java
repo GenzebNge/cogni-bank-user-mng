@@ -3,6 +3,7 @@ package com.cognibank.usermng.usermngspringmicroserviceapp.repository;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.User;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserDetails;
 import com.cognibank.usermng.usermngspringmicroserviceapp.model.UserType;
+import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserServiceTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

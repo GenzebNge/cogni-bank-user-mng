@@ -223,6 +223,20 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @throws UserNotFoundException {@link UserNotFoundException} - if the given User is not found on the database
+     * @see User
+     * @see UserRepository#findByUserName(String)
+     */
+    @Override
+    public String getUserId(String userName) {
+       User user = userRepository.findByUserName(userName).orElseThrow(UserNotFoundException::new);
+
+       return user.getId();
+    }
+
+    /**
      * Hashes the password
      *
      * @param userName      UserName of the User

@@ -12,6 +12,7 @@ import java.util.Optional;
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
+
     /**
      * Finds the User by UserName and Password
      * @param userName UserName of the User
@@ -20,4 +21,12 @@ public interface UserRepository extends JpaRepository<User, String> {
      * @see Optional
      */
     Optional<User> findByUserNameAndPassword(String userName, String password);
+
+    /**
+     * Finds the User by UserName
+     * @param userName UserName of the User
+     * @return Optional<User>
+     * @see Optional
+     */
+    Optional<User> findByUserName(String userName);
 }

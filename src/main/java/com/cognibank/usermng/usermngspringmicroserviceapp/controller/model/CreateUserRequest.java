@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class CreateUserRequest {
     @ApiModelProperty(notes = "User name must be unique and between 3-32 characters.", position = 1)
+
     @NotBlank(message = "{CreateUser.UserName.Blank}")
     @Size(min = 3, max = 32, message = "{CreateUser.UserName.Size}")
     @Pattern.List({

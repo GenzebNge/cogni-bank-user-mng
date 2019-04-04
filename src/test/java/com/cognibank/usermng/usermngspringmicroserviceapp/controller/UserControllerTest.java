@@ -46,6 +46,8 @@ public class UserControllerTest {
     @InjectMocks
     private UserControllerImpl userController;
 
+    public final String USER_ID = "000afd42-8cfe-44f5-bc58-b52b114c5b70";
+
     @Before
     public void setup() {
         // We would need this line if we would not use MockitoJUnitRunner
@@ -85,7 +87,7 @@ public class UserControllerTest {
                 .withFieldName(UserService.EMAIL)
                 .withFieldValue("some@email.com"));
         user.withUserName("alok")
-                .withId("000afd42-8cfe-44f5-bc58-b52b114c5b70")
+                .withId(USER_ID)
                 .withActive(true)
                 .withPassword("blahblah")
                 .withType(UserType.User)
@@ -145,7 +147,7 @@ public class UserControllerTest {
     @Test
     public void shouldReceiveOkStatusWithUserIdCreateUser() throws Exception {
         Mockito.when(userService.createNewUser(Mockito.any(User.class)))
-                .thenReturn("000afd42-8cfe-44f5-bc58-b52b114c5b70");
+                .thenReturn(USER_ID);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/createUser")
@@ -163,7 +165,7 @@ public class UserControllerTest {
                 .thenReturn(true);
 
         mockMvc.perform(MockMvcRequestBuilders
-                .put("/unlockUser/000afd42-8cfe-44f5-bc58-b52b114c5b70")
+                .put("/unlockUser/" + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -175,9 +177,10 @@ public class UserControllerTest {
                 .thenThrow(UserNotFoundException.class);
 
         mockMvc.perform(MockMvcRequestBuilders
-                .put("/unlockUser/000afd42-8cfe-44f5-bc58-b52b114c5b70")
+                .put("/unlockUser/" + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
                 .andExpect(status().isNotFound());
     }
 
@@ -187,7 +190,7 @@ public class UserControllerTest {
                 .thenThrow(UserNotFoundException.class);
 
         mockMvc.perform(MockMvcRequestBuilders
-                .put("/updateUser/000AFD42-8CFE-44F5-BC58-B52B114C5B70")
+                .put("/updateUser/" + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"Email\":\"foo@bar.com\"}")
                 .accept(MediaType.APPLICATION_JSON))
@@ -201,7 +204,7 @@ public class UserControllerTest {
                 .thenReturn(true);
 
         mockMvc.perform(MockMvcRequestBuilders
-                .put("/updateUser/000AFD42-8CFE-44F5-BC58-B52B114C5B70")
+                .put("/updateUser/" + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"Email\":\"foo@bar.com\"}")
                 .accept(MediaType.APPLICATION_JSON))
@@ -216,7 +219,7 @@ public class UserControllerTest {
                 .thenThrow(UserDetailsUpdateException.class);
 
         mockMvc.perform(MockMvcRequestBuilders
-                .put("/updateUser/000AFD42-8CFE-44F5-BC58-B52B114C5B70")
+                .put("/updateUser/" + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"FirstName\":\"NewFirstName\"}")
                 .accept(MediaType.APPLICATION_JSON))
@@ -230,7 +233,7 @@ public class UserControllerTest {
                 .thenReturn(true);
 
         mockMvc.perform(MockMvcRequestBuilders
-                .put("/changePassword/000AFD42-8CFE-44F5-BC58-B52B114C5B70")
+                .put("/changePassword/" + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"newPassword\":\"1234rewq\"}")
                 .accept(MediaType.APPLICATION_JSON))
@@ -252,7 +255,7 @@ public class UserControllerTest {
                 }});
 
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/getUserDetails/000AFD42-8CFE-44F5-BC58-B52B114C5B70")
+                .get("/getUserDetails/" + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -260,6 +263,18 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.Email").value(email))
                 .andExpect(jsonPath("$.FirstName").value(firstName))
                 .andExpect(jsonPath("$.LastName").value(lastName));
+    }
+
+    @Test
+    public void shouldReturnUserIdProvidedUserNameIsGiven() throws Exception {
+        Mockito.when(userService.getUserId(Mockito.anyString())).thenReturn(USER_ID);
+
+        // Calling the mockmvc request.
+        mockMvc.perform(MockMvcRequestBuilders.get("/retrieveUserId/alok")
+        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(USER_ID));
     }
 
 }
