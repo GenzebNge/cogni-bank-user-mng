@@ -4,12 +4,12 @@ env:
   variables:
     JAVA_HOME: "/usr/lib/jvm/java-8-openjdk-amd64"
     AWS_DEFAULT_REGION: "us-east-1"
-    IMAGE_REPO_NAME: "cognibank"
+    IMAGE_REPO_NAME: ""
     IMAGE_TAG: "latest"
   parameter-store:
-    AWS_ACCOUNT_ID: "/cb/account/id"
-    AWS_ACCESS_KEY_ID: "/cb/access/key/id"
-    AWS_SECRET_ACCESS_KEY: "/cb/secret/access/key"
+    AWS_ACCOUNT_ID: "/CodeBuild/AWS_ACCOUNT_ID"
+    AWS_ACCESS_KEY_ID: "/CodeBuild/AWS_ACCESS_KEY_ID"
+    AWS_SECRET_ACCESS_KEY: "/CodeBuild/AWS_SECRET_ACCESS_KEY"
 
 phases:
   install:
