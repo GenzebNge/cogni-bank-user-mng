@@ -267,4 +267,16 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    public void deleteUser(String id){
+        userRepository.deleteById(id);
+    }
+
+//    private void checkIfUserIsInactive(User user) {
+//        if (user.getActive()== false){
+//            deleteUser(user.getId());
+//        }
+//    }
+
+
+
 }

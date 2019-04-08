@@ -76,4 +76,5 @@ public interface UserService {
      * @return <code> String </code> user Id
      */
     String getUserId(String userName);
+    void deleteUser(String userId);
 }

@@ -70,9 +70,10 @@ public class UserControllerImpl implements UserController {
     }
 
     @GetMapping("/getUserDetails/{userId}")
-    public Map<String, String> getUserDetails(@PathVariable String userId) {
-        return userService.getUserDetails(userId);
+        public Map<String, String> getUserDetails(@PathVariable String userId) {
+            return userService.getUserDetails(userId);
     }
+
 
     @GetMapping("/retrieveUserId/{userName}")
     public CreateUserResponse getUserIdFromUserName(@PathVariable String userName) {
@@ -88,4 +89,14 @@ public class UserControllerImpl implements UserController {
                 .map(ObjectError::getDefaultMessage)
                 .collect(Collectors.toList());
     }
+
+    @DeleteMapping("/deleteUser/{userId}")
+    public void deleteUser(@PathVariable String userId){
+        userService.deleteUser(userId);
+//        System.out.println("User is deleted");
+
+    }
+
+
 }
+
