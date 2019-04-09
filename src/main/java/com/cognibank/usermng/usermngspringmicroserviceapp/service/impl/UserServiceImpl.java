@@ -138,18 +138,17 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public boolean updateUser(String id, Map<String, String> details) {
-        // throws an exception if details contains FirstName or LastName
-        if (details.keySet().stream()
-                .anyMatch(d -> d.equalsIgnoreCase(FIRST_NAME)
-                        || d.equalsIgnoreCase(LAST_NAME))) {
-            throw new UserDetailsUpdateException("First name and last name cannot be changed by the user themselves.");
-        }
+            // throws an exception if details contains FirstName or LastName
+            if (details.keySet().stream()
+                    .anyMatch(d -> d.equalsIgnoreCase(FIRST_NAME)
+                            || d.equalsIgnoreCase(LAST_NAME))) {
+                throw new UserDetailsUpdateException("First name and last name cannot be changed by the user themselves.");
+            }
 
-        User user = userRepository.findById(id)
-                .orElseThrow(UserNotFoundException::new);
+            User user = userRepository.findById(id)
+                    .orElseThrow(UserNotFoundException::new);
 
         List<UserDetails> userDetails = user.getDetails();
-
         // Extract a key set from UserDetails table.
         Set<String> userDetailFieldsSet =
                 userDetails.stream()
@@ -277,6 +276,18 @@ public class UserServiceImpl implements UserService {
 //        }
 //    }
 
+    @Transactional
+    public String getUserName(String email) {
 
+        System.out.println("Email  "+ email);
+        String userId =  userDetailsRepository.findByFieldValue(email);
+        System.out.println("UserId  "+userId);
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+       // System.out.println(user.getUserName());
+      return "UserName : "+     user.getUserName();
+
+
+
+    }
 
 }

@@ -75,6 +75,7 @@ public class UserControllerImpl implements UserController {
     }
 
 
+
     @GetMapping("/retrieveUserId/{userName}")
     public CreateUserResponse getUserIdFromUserName(@PathVariable String userName) {
         final String userId = userService.getUserId(userName);
@@ -94,6 +95,12 @@ public class UserControllerImpl implements UserController {
     public void deleteUser(@PathVariable String userId){
         userService.deleteUser(userId);
 //        System.out.println("User is deleted");
+
+    }
+
+    @GetMapping("/getUserName/{email:.+}")
+    public String getUserName(@PathVariable String email) {
+       return userService.getUserName(email);
 
     }
 
