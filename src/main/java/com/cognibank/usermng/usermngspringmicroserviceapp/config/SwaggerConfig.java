@@ -22,7 +22,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.cognibank.usermng.usermngspringmicroserviceapp.controller"))
-                .paths(regex("users/management/.*"))
+                .paths(PathSelectors.any())
                 .build()
                 .apiInfo(metaData());
     }
