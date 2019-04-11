@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
+@RequestMapping("/users/management")
 public class UserControllerImpl implements UserController {
     private UserService userService;
 
