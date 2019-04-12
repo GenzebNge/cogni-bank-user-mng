@@ -227,4 +227,9 @@ public class UserServiceTest {
         assertEquals("verifying the user id returned","UserName : alok2", userService.getUserName("some@email.com"));
     }
 
+    @Test(expected = UserNotFoundException.class)
+    public void shouldThrowAnExceptionWhenGivenEmailThatDoesNotExist(){
+        userService.getUserName("pragathi@email.com");
+    }
+
 }

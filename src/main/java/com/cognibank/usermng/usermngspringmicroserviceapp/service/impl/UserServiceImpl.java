@@ -6,6 +6,8 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserDetails
 import com.cognibank.usermng.usermngspringmicroserviceapp.repository.UserRepository;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.UserService;
 import com.cognibank.usermng.usermngspringmicroserviceapp.service.exception.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserDetailsRepository userDetailsRepository;
 
+    Logger logger =LoggerFactory.getLogger(getClass());
     /**
      * Constructor to create beans which are dependent in this class
      *
@@ -43,6 +46,10 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.userDetailsRepository = userDetailsRepository;
     }
+
+//    public UserServiceImpl(){
+//
+//    }
 
     /**
      * {@inheritDoc}
@@ -266,27 +273,18 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void deleteUser(String id){
+    public void deleteUser(String id) {
         userRepository.deleteById(id);
     }
 
-//    private void checkIfUserIsInactive(User user) {
-//        if (user.getActive()== false){
-//            deleteUser(user.getId());
-//        }
-//    }
 
     @Transactional
     public String getUserName(String email) {
 
-        //System.out.println("Email  "+ email);
-        String userId =  userDetailsRepository.findByFieldValue(email);
-       // System.out.println("UserId  "+userId);
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-       // System.out.println(user.getUserName());
-      return "UserName : "+     user.getUserName();
-
-
+        UserDetails userDetails = userDetailsRepository.findByFieldValue(email).orElseThrow(UserNotFoundException::new);
+        //User user = userRepository.findById(userDetails.getUser().toString()).orElseThrow(UserNotFoundException::new);
+        logger.info("Given email Id {} the userId and username are {} {} ", email, userDetails.getUser().getId(), userDetails.getUser().getUserName());
+        return "UserName : " + userDetails.getUser().getUserName();
 
     }
 

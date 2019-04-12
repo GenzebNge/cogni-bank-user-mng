@@ -25,7 +25,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .apis(RequestHandlerSelectors.basePackage("com.cognibank.usermng.usermngspringmicroserviceapp.controller"))
                 .paths(PathSelectors.any())
                 .build()
-                .apiInfo(metaData()).pathMapping("/users/management");
+                .apiInfo(metaData());//.pathMapping("/users/management");
     }
 
     private ApiInfo metaData() {
