@@ -282,7 +282,6 @@ public class UserServiceImpl implements UserService {
     public String getUserName(String email) {
 
         UserDetails userDetails = userDetailsRepository.findByFieldValue(email).orElseThrow(UserNotFoundException::new);
-        //User user = userRepository.findById(userDetails.getUser().toString()).orElseThrow(UserNotFoundException::new);
         logger.info("Given email Id {} the userId and username are {} {} ", email, userDetails.getUser().getId(), userDetails.getUser().getUserName());
         return "UserName : " + userDetails.getUser().getUserName();
 
