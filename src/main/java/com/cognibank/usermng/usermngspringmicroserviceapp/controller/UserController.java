@@ -13,7 +13,7 @@ import java.util.Map;
         }
 )
 public interface UserController {
-    String VERSION = "0.0.1";
+    String VERSION = "0.0.2";
 
     @ApiOperation(value = "Returns the current API version.", response = GetVersionResponse.class)
     GetVersionResponse getVersion();
