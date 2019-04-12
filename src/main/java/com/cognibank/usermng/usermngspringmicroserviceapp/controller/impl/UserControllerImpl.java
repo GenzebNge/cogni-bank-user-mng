@@ -95,7 +95,7 @@ public class UserControllerImpl implements UserController {
     @DeleteMapping("/deleteUser/{userId}")
     public void deleteUser(@PathVariable String userId){
         userService.deleteUser(userId);
-//        System.out.println("User is deleted");
+       System.out.println("User is deleted");
 
     }
 

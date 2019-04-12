@@ -35,8 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
 @WebMvcTest(UserController.class)
@@ -293,6 +292,22 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(USER_ID));
+    }
+
+    @Test
+    public void getUserNameWithEmail() throws Exception{
+        Mockito.when(userService.getUserName(Mockito.anyString())).thenReturn("Pragathi");
+
+        //calling mockmvc request
+
+        mockMvc.perform(MockMvcRequestBuilders.get(basePath.concat("/getUserName/pragathi@gmail.com"))
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("Pragathi"));
+
+
     }
 
 }
