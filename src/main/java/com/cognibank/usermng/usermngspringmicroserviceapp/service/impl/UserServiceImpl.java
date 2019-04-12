@@ -279,9 +279,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public String getUserName(String email) {
 
-        System.out.println("Email  "+ email);
+        //System.out.println("Email  "+ email);
         String userId =  userDetailsRepository.findByFieldValue(email);
-        System.out.println("UserId  "+userId);
+       // System.out.println("UserId  "+userId);
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
        // System.out.println(user.getUserName());
       return "UserName : "+     user.getUserName();

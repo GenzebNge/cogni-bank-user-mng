@@ -11,6 +11,8 @@ import com.cognibank.usermng.usermngspringmicroserviceapp.service.impl.Authentic
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -31,6 +33,8 @@ public class UserServiceTest {
     private UserService userService;
 
     private String userId;
+
+    Logger logger = LoggerFactory.getLogger(getClass());
 
     public static final String USER_NAME = "alok2";
     public static final String PASSWORD = "blahblah";
@@ -215,6 +219,12 @@ public class UserServiceTest {
 
         assertTrue("Should be equal to the user id created in the before each method.",
                 userId.equalsIgnoreCase(userIdFromService));
+    }
+
+    @Test
+    public void shouldReturnUserNameForGivenEmail(){
+    logger.info("username of the user {}, when given emailid is  {}",userService.getUserName("some@email.com"), "some@email.com" );
+        assertEquals("verifying the user id returned","UserName : alok2", userService.getUserName("some@email.com"));
     }
 
 }
