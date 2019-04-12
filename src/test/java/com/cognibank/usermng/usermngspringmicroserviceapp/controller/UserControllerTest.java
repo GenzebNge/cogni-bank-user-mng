@@ -61,7 +61,7 @@ public class UserControllerTest {
 //    String keyValue = env.getProperty("spring.data.rest.basePath");
 //
     //@Value("${spring.data.rest.basePath}")
-    String basePath = "";
+    String basePath = "/users/management";
 
     @Before
     public void setup() {
