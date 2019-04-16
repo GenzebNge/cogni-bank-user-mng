@@ -17,5 +17,5 @@ import java.util.Optional;
 @Repository
 public interface UserDetailsRepository extends JpaRepository<UserDetails, Long> {
 
-    Optional<UserDetails>  findByFieldValue(String fieldValue);
+    Optional<UserDetails> findByFieldValue(String fieldValue);
 }

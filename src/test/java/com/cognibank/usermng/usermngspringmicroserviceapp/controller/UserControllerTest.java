@@ -295,19 +295,16 @@ public class UserControllerTest {
     }
 
     @Test
-    public void getUserNameWithEmail() throws Exception{
+    public void shouldReturnUserNameMappedToEmailId() throws Exception {
         Mockito.when(userService.getUserName(Mockito.anyString())).thenReturn("Pragathi");
 
         //calling mockmvc request
-
-        mockMvc.perform(MockMvcRequestBuilders.get(basePath.concat("/getUserName/pragathi@gmail.com"))
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(MockMvcRequestBuilders
+                .get(basePath.concat("/getUserName/pragathi@gmail.com"))
+                .contentType(MediaType.APPLICATION_JSON))
+                //.accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string("Pragathi"));
-
-
+                .andExpect(jsonPath("$.userName").value("Pragathi"));
     }
-
 }

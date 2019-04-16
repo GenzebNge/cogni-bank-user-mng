@@ -77,8 +77,17 @@ public interface UserService {
      */
     String getUserId(String userName);
 
-
+    /**
+     * Delete the user based on the user id provided.
+     * @param userId User id of the User
+     * @return <code> void </code>
+     */
     void deleteUser(String userId);
 
-    String getUserName(String email);
+    /**
+     * Returns user name from the database mapped to email
+     * @param emailId Email id of the User
+     * @return <code> String </code> user name
+     */
+    String getUserName(String emailId);
 }

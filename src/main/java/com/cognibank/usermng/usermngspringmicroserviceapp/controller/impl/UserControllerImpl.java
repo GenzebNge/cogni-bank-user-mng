@@ -18,7 +18,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/users/management")
+@CrossOrigin("http://localhost:3000")
+// Required to run test.
+//@RequestMapping("/users/management")
 public class UserControllerImpl implements UserController {
     private UserService userService;
 
@@ -75,12 +77,24 @@ public class UserControllerImpl implements UserController {
             return userService.getUserDetails(userId);
     }
 
-
-
     @GetMapping("/retrieveUserId/{userName}")
     public CreateUserResponse getUserIdFromUserName(@PathVariable String userName) {
         final String userId = userService.getUserId(userName);
         return new CreateUserResponse().withUserId(userId);
+    }
+
+    @DeleteMapping("/deleteUser/{userId}")
+    public void deleteUser(@PathVariable String userId){
+        userService.deleteUser(userId);
+        System.out.println("User is deleted");
+    }
+
+    @GetMapping("/getUserName/{emailId:.+}")
+    public GetUserNameResponse getUserName(@PathVariable String emailId) {
+        System.out.println("/getUserName..." + emailId);
+        final String userName = userService.getUserName(emailId);
+        System.out.println("userName..." + userName);
+        return new GetUserNameResponse().withUserName(userName);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -91,20 +105,4 @@ public class UserControllerImpl implements UserController {
                 .map(ObjectError::getDefaultMessage)
                 .collect(Collectors.toList());
     }
-
-    @DeleteMapping("/deleteUser/{userId}")
-    public void deleteUser(@PathVariable String userId){
-        userService.deleteUser(userId);
-       System.out.println("User is deleted");
-
-    }
-
-    @GetMapping("/getUserName/{email:.+}")
-    public String getUserName(@PathVariable String email) {
-       return userService.getUserName(email);
-
-    }
-
-
 }
-

@@ -77,7 +77,7 @@ public interface UserController {
             @ApiResponse(code = 404, message = "When user not found."),
             @ApiResponse(code = 403, message = "When the user is locked.")
     })
-       Map<String, String> getUserDetails(String id);
+    Map<String, String> getUserDetails(String id);
 
     @ApiOperation(value = "Get user id from the user name.")
     @ApiResponses(value = {
@@ -86,13 +86,18 @@ public interface UserController {
     })
     CreateUserResponse getUserIdFromUserName(String userName);
 
-
-
     @ApiOperation(value = "Delete user id when inactive" )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User deleted."),
             @ApiResponse(code = 404, message = "When the user is not found.")
     })
     void deleteUser(String userId);
+
+    @ApiOperation(value = "Get user name based on the email id provided." )
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successful."),
+            @ApiResponse(code = 404, message = "When the user is not found.")
+    })
+    GetUserNameResponse getUserName(String emailId);
 
 }
